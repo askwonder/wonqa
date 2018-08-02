@@ -1,0 +1,30 @@
+{
+  "taskRoleArn": "arn:aws:iam::<awsAccountID>:role\/ecsExecutionRole",
+  "executionRoleArn": "arn:aws:iam::<awsAccountID>:role\/ecsExecutionRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "4096",
+  "memory": "10240",
+  "containerDefinitions": [
+    {
+      "name": "",
+      "image": "",
+      "portMappings": [],
+      "essential": true,
+      "environment": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "wonqa-log-group",
+          "awslogs-region": "",
+          "awslogs-stream-prefix": "wonqa"
+        }
+      }
+    }
+  ]
+}
