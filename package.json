@@ -1,0 +1,47 @@
+{
+  "name": "@askwonder/wonqa",
+  "version": "0.0.106",
+  "description": "On-demand test environments",
+  "main": "src/index.js",
+  "scripts": {
+    "qa": "BRANCH=`bash ./demo/branch.sh` node demo/test.js",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.273.1",
+    "dnsimple": "^2.7.0",
+    "eslint": "^5.1.0",
+    "octokat": "^0.10.0"
+  },
+  "devDependencies": {
+    "aws-sdk-mock": "^4.0.0",
+    "babel-eslint": "^8.2.6",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.10.0",
+    "jest": "^23.4.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,mjs}"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
+      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
+    ],
+    "testEnvironment": "node",
+    "testURL": "http://localhost",
+    "moduleFileExtensions": [
+      "web.js",
+      "mjs",
+      "js",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ]
+  }
+}
