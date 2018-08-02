@@ -1,5 +1,8 @@
 const path = require('path');
-const { validateOptions } = require('./validate');
+const {
+  validateOptions,
+  validateLogsOptions,
+} = require('./validate');
 const create = require('./create');
 const prune = require('./prune');
 const logs = require('./logs');
@@ -13,16 +16,18 @@ const init = require('./init');
 const WONQA_DIR = path.join(__dirname, '..');
 
 function Wonqa(options = {}) {
-  validateOptions(options);
   return {
     create() {
+      validateOptions(options);
       return create({ ...options, WONQA_DIR });
     },
     prune() {
+      validateOptions(options);
       return prune({ ...options, WONQA_DIR });
     },
     logs(container) {
-      return logs({ ...options, WONQA_DIR, container });
+      validateLogsOptions({ ...options, container });
+      return logs({ ...options, container, WONQA_DIR });
     },
   };
 }

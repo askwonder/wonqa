@@ -175,6 +175,25 @@ const validateOptions = ({
   }
 };
 
+const validateLogsOptions = ({
+  aws: {
+    awsRegion,
+    clusterName,
+  } = {},
+  container,
+} = {}) => {
+  if (!awsRegion || typeof awsRegion !== 'string') {
+    throw new Error('Missing awsRegion');
+  }
+  if (!clusterName || typeof clusterName !== 'string') {
+    throw new Error('Missing clusterName');
+  }
+  if (!container || typeof container !== 'string') {
+    throw new Error('Missing container name');
+  }
+};
+
 module.exports = {
   validateOptions,
+  validateLogsOptions,
 };

@@ -1,6 +1,6 @@
 {
   "name": "@askwonder/wonqa",
-  "version": "0.0.106",
+  "version": "0.0.107",
   "description": "On-demand test environments",
   "main": "src/index.js",
   "scripts": {

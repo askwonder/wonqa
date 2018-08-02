@@ -3,5 +3,5 @@ dnsimple.ini
 nginx/ecs-nginx.conf
 nginx/cert/
 task.json
-node_modules
 task_id.sh
+node_modules
