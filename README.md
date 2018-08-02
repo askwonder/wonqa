@@ -207,7 +207,7 @@ If you prefer a custom implementation, you can pass a `createDNSRecords` functio
 - `subDomain` [string] **required**: The sub-domain where your QA environment will be located. We recommend using your current branch name re-formatted with only alphanumerical characters and dash characters (to be URL safe!). You can easily get this by running:
 ```bash
 BRANCH=`git rev-parse --abbrev-ref HEAD` # get git branch name
-echo ${BRANCH//[^A-Za-z0-9_]/-} # strip out everything but alphanumerical and dash characters
+echo ${BRANCH//[^A-Za-z0-9]/-} # strip out everything but alphanumerical and dash characters
 ```
 
 - `createDNSRecords` [function]: By default Wonqa will create DNS records using DNSimple. You can override this behavior by providing this callback. This function will accept 1 argument, the AWS PublicIP used to run your task, and should return a Promise which resolves when the DNS records have been created.
