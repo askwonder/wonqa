@@ -135,7 +135,7 @@ const validateAWSOptions = ({
   }
 };
 
-const validateOptions = ({
+const validateCreateOptions = ({
   https = {},
   dns = {},
   aws = {},
@@ -193,7 +193,50 @@ const validateLogsOptions = ({
   }
 };
 
+const validatePruneOptions = ({
+  aws: {
+    awsRegion,
+    iamUsername,
+    clusterName,
+  } = {},
+  dns: {
+    rootDomain,
+    subDomain,
+    dnsimpleToken,
+    dnsimpleAccountID,
+    createDNSRecords,
+  } = {},
+  onError,
+} = {}) => {
+  if (!awsRegion || typeof awsRegion !== 'string') {
+    throw new Error('Missing awsRegion');
+  }
+  if (!iamUsername || typeof iamUsername !== 'string') {
+    throw new Error('Missing iamUsername');
+  }
+  if (!clusterName || typeof clusterName !== 'string') {
+    throw new Error('Missing clusterName');
+  }
+  if (!rootDomain || typeof rootDomain !== 'string') {
+    throw new Error('Missing rootDomain');
+  }
+  validateSubDomain(subDomain);
+  if (createDNSRecords && typeof createDNSRecords !== 'function') {
+    throw new Error('createDNSRecords must be a function');
+  }
+  if (!createDNSRecords && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
+    throw new Error('Missing dns.dnsimpleToken required to create SSL certificates');
+  }
+  if (!createDNSRecords && typeof dnsimpleAccountID !== 'string') {
+    throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleAccountID value');
+  }
+  if (onError && typeof onError !== 'function') {
+    throw new Error('onError must be a function');
+  }
+};
+
 module.exports = {
-  validateOptions,
+  validateCreateOptions,
   validateLogsOptions,
+  validatePruneOptions,
 };
