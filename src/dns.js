@@ -167,7 +167,7 @@ const deleteRecord = ({
     .zones
     .deleteZoneRecord(dnsimpleAccountID, rootDomain, record.id)
     .then(() => {
-      console.log(`Deleted record: ${record.id}`);
+      console.log(`Deleted ${record.type} record: ${record.id}`);
       return resolve();
     })
     .catch(err => reject(err));

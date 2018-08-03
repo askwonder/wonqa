@@ -61,13 +61,13 @@ const prune = ({
       repositoryName: NGINX_REPOSITORY_NAME,
     }))
     .then(() => (createDNSRecords
-      ? deleteDNSRecords({
+      ? Promise.resolve()
+      : deleteDNSRecords({
         dnsimpleToken,
         dnsimpleAccountID,
         rootDomain,
         subDomain,
-      })
-      : Promise.resolve()))
+      })))
     .catch((error) => {
       if (userOnError) {
         userOnError(error);

@@ -255,7 +255,7 @@ Wonqa helps you keep your costs low by pruning stale resources each time you cre
 
 Each time you call `wonqa.create()`, wonqa will first create a QA environment and use your provided subDomain and an incremental revision ID to tag the created AWS resources. At the end of this process, wonqa will look for any AWS resource which match the provided subDomain and a previous revision ID and delete those.
 
-You can also use `wonqa.prune()` to delete any resources created by the last `create()` call. This call will also delete the images in the provided ECR repo that are tagged with the given subDomain (the SSL-enabled nginx images created and pushed by wonqa). By default, this call will also delete DNS records created by default, unless you overrode this behavior by providing a `createDNSRecords` callback.
+You can also use `wonqa.prune()` to delete any resources created by the last `create()` call. `prune()` will find the ECS task linked to the given `subDomain` and stop it, then deregister the related task definition, then delete the images stored in the `wonqa-nginx` ECR repo (or the ECR repo at `imageRepositoryPath`) also tagged with the provided `subDomain`. By default, this call will also delete DNS records created by default, unless you overrode this behavior by providing a `createDNSRecords` callback. For eg., you can call `prune()` whenever a PR is merged using GitHub webhooks.
 
 If you use AWS's ECR service to host your images, you may want to consider adding [lifecycle policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) on each repo to automatically delete images after a given time period.
 
