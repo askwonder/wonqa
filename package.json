@@ -1,12 +1,16 @@
 {
   "name": "wonqa",
-  "version": "0.0.101",
+  "version": "0.0.102",
   "description": "On-demand test environments",
   "main": "src/index.js",
   "scripts": {
     "test": "jest"
   },
   "author": "askwonder.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/askwonder/wonqa.git"
+  },
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.273.1",
