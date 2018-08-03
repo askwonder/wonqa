@@ -1,13 +1,12 @@
 {
-  "name": "@askwonder/wonqa",
-  "version": "0.0.107",
+  "name": "wonqa",
+  "version": "0.0.101",
   "description": "On-demand test environments",
   "main": "src/index.js",
   "scripts": {
-    "qa": "BRANCH=`bash ./demo/branch.sh` node demo/test.js",
     "test": "jest"
   },
-  "author": "",
+  "author": "askwonder.com",
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.273.1",
