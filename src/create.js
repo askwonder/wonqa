@@ -48,16 +48,16 @@ const create = ({
 }) => {
   const scope = {};
   return configure({ WONQA_DIR, awsRegion })
-    // .then(() => writeConfFile({ WONQA_DIR, servers }))
-    // .then(() => ssl({
-    //   rootDomain,
-    //   subDomain,
-    //   servers,
-    //   email,
-    //   dnsimpleToken,
-    //   cachePath,
-    //   WONQA_DIR,
-    // }))
+    .then(() => writeConfFile({ WONQA_DIR, servers }))
+    .then(() => ssl({
+      rootDomain,
+      subDomain,
+      servers,
+      email,
+      dnsimpleToken,
+      cachePath,
+      WONQA_DIR,
+    }))
     // .then(() => buildAndPushNginx({
     //   awsAccountID,
     //   awsRegion,

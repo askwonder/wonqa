@@ -28,7 +28,7 @@ describe('utils', () => {
     'worker_connections 1024;',
   ]);
 
-  test('writeNginxConfFile :: creates the nginx config with a default server', async () => {
+  test('writeConfFile :: creates the nginx config with a default server', async () => {
     const servers = [
       {
         default: true,
@@ -40,7 +40,7 @@ describe('utils', () => {
     expect(expected.every(el => file.includes(el))).toBe(true);
   });
 
-  test('writeNginxConfFile :: creates the nginx config with multiple servers', async () => {
+  test('writeConfFile :: creates the nginx config with multiple servers', async () => {
     const servers = [
       {
         default: true,
