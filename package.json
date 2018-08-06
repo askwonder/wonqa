@@ -1,6 +1,6 @@
 {
   "name": "wonqa",
-  "version": "0.0.105",
+  "version": "0.0.106",
   "description": "On-demand test environments",
   "main": "src/index.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "eslint-plugin-react": "^7.10.0",
     "jest": "^23.4.1"
   },
+  "keywords": ["aws", "fargate", "ecs", "docker", "dns", "qa", "testing", "ssl", "https", "aws-sdk"],
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,mjs}"
