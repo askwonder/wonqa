@@ -12,6 +12,9 @@ const validateSubDomain = (subDomain) => {
   if (!alphaNumAndDash.test(subDomain)) {
     throw new Error('subDomain should only contain alphanumerical and "-" characters');
   }
+  if (subDomain !== subDomain.toLowerCase()) {
+    throw new Error('subDomain only contain lowercase characters');
+  }
 };
 
 const validateNginxConf = (servers) => {
@@ -23,6 +26,10 @@ const validateNginxConf = (servers) => {
   }
   if (!servers.every(server => server.port)) {
     throw new Error('Every object in the servers array must have a port property');
+  }
+  const serverNames = servers.filter(el => el.serverName);
+  if (serverNames && !serverNames.every(el => el.serverName === el.serverName.toLowerCase())) {
+    throw new Error('Every serverName value must be in lowercase');
   }
 };
 
