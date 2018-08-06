@@ -2,6 +2,8 @@
 Wonqa makes it easy to create disposable SSL-enabled staging environments using AWS Fargate and accessible through custom DNS: `https://your-branch-name.your-domain`.
 These environments are useful for any type of QA, from manual testing to functional tests.
 
+Read the release announcement [here](https://medium.com/wonder-engineering/on-demand-qa-environments-with-aws-fargate-c23b41f15a0c).
+
 ## Install
 Wonqa runs in [node](https://nodejs.org/en/) and is available through [npm](https://www.npmjs.com/)
 ```
