@@ -13,7 +13,7 @@ const validateSubDomain = (subDomain) => {
     throw new Error('subDomain should only contain alphanumerical and "-" characters');
   }
   if (subDomain !== subDomain.toLowerCase()) {
-    throw new Error('subDomain only contain lowercase characters');
+    throw new Error('subDomain should only contain lowercase characters');
   }
 };
 
@@ -83,6 +83,9 @@ const validateDNSOptions = ({
 }) => {
   if (!rootDomain || typeof rootDomain !== 'string') {
     throw new Error('Missing rootDomain');
+  }
+  if (rootDomain !== rootDomain.toLowerCase()) {
+    throw new Error('rootDomain should only contain lowercase characters');
   }
   validateSubDomain(subDomain);
   if (createDNSRecords && typeof createDNSRecords !== 'function') {
