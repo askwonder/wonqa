@@ -15,17 +15,11 @@ const createRepository = async ({ awsRegion, repositoryName }) => {
   await ecrClient.createRepository({ repositoryName }).promise();
 };
 
-const listImages = ({ awsRegion, repositoryName }) => new Promise((resolve) => {
+const listImages = async ({ awsRegion, repositoryName }) => {
   const ecrClient = createEcr({ awsRegion });
-  ecrClient.listImages({ repositoryName }, (err, data = {}) => {
-    if (err) {
-      console.log(`Could not list images for repo: ${repositoryName}`);
-      return resolve();
-    }
-    const { imageIds } = data;
-    return resolve(imageIds);
-  });
-});
+  const { imageIds = [] } = await ecrClient.listImages({ repositoryName }).promise() || {};
+  return imageIds;
+};
 
 const deleteImages = ({
   awsRegion,
