@@ -167,7 +167,7 @@ Wonqa currently only supports certbot's DNSimple plugin and so you'll need a DNS
 To enable Internet traffic to hit your SSL-enabled QA environment living inside AWS Fargate, wonqa will configure a [nginx](https://www.nginx.com/) container to proxy HTTPs traffic from the Internet to the containers running your app code.
 
 #### Why `https.cachePath`?
-To avoid hitting LetsEncrypt's [rate limits](https://letsencrypt.org/docs/rate-limits/) you'll need to provide the wonqa constructor with an absolute path to a local directory that wonqa can use to cache certificates in between builds. For eg: '/Users/bob/Desktop/myApp' where myApp is a directory. Wonqa create a directory named `etc` at this path to store SSL certificates. For example, if you provide the path `/Users/bob/Desktop/myApp`, wonqa will create `/Users/bob/Desktop/myApp/etc` where `etc` is a directory.
+To avoid hitting LetsEncrypt's [rate limits](https://letsencrypt.org/docs/rate-limits/) you'll need to provide the wonqa constructor with an absolute path to a local directory that wonqa can use to cache certificates in between builds. For eg: `/Users/bob/Desktop/myApp` where myApp is a directory. Wonqa create a directory named `etc` at this path to store SSL certificates. For example, if you provide the path `/Users/bob/Desktop/myApp`, wonqa will create `/Users/bob/Desktop/myApp/etc` where `etc` is a directory.
 Tips: 
 - add `/Users/bob/Desktop/myApp/etc` to your `.gitignore` file if you don't want your SSL certificates to be checked-in
 - if you run the wonqa process in CI, you can use the same path to cache certs remotely
@@ -177,7 +177,7 @@ Once your environment is up and running, DNS records can be created to point a u
 
 By default, wonqa will use DNSimple to create or edit DNS records. If you use DNSimple, simply pass your DNSimple creds to the wonqa constructor. 
 
-If you prefer a custom implementation, you can pass a `createDNSRecords` function to the  conwonqastructor. This function will be called with the publicIP as its only argument and should return a Promise which resolves when the records are created. Wonqa will call this function as soon as the environment is running inside AWS and will poll the given `https://subDomain.rootDomain` URL for a 200 OK once the promise has resolved.
+If you prefer a custom implementation, you can pass a `createDNSRecords` function to the wonqa constructor. This function will be called with the publicIP as its only argument and should return a Promise which resolves when the records are created. Wonqa will call this function as soon as the environment is running inside AWS and will poll the given `https://subDomain.rootDomain` URL for a 200 OK once the promise has resolved.
 
 ## Reference
 #### HTTPS
