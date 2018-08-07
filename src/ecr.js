@@ -17,37 +17,45 @@ const createRepository = async ({ awsRegion, repositoryName }) => {
 
 const listImages = async ({ awsRegion, repositoryName }) => {
   const ecrClient = createEcr({ awsRegion });
-  const { imageIds = [] } = await ecrClient.listImages({ repositoryName }).promise() || {};
-  return imageIds;
+  try {
+    const { imageIds = [] } = await ecrClient.listImages({ repositoryName }).promise() || {};
+    return imageIds;
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
-const deleteImages = ({
+const deleteImages = async ({
   awsRegion,
   subDomain,
   repositoryName,
-}) => new Promise((resolve, reject) => listImages({ awsRegion, repositoryName })
-  .then((imageIds) => {
-    const toDelete = [];
-    imageIds.forEach((image) => {
-      if (image.imageTag && image.imageTag.includes(subDomain)) {
-        toDelete.push(image);
-      }
-    });
-    if (toDelete.length > 0) {
-      const ecrClient = createEcr({ awsRegion });
-      ecrClient.batchDeleteImage({ imageIds: toDelete, repositoryName }, (err, data = {}) => {
-        if (err || (data.failures && data.failures.length > 0)) {
-          console.log(`Could not delete images for repo: ${repositoryName}`);
-          reject(err, data);
-        } else {
-          console.log(`Deleted image for repo: ${repositoryName}`, data.imageIds);
-          resolve();
-        }
-      });
-    } else {
-      resolve();
+}) => {
+  const imageIds = await listImages({ awsRegion, repositoryName });
+  const toDelete = [];
+  imageIds.forEach((image) => {
+    if (image.imageTag && image.imageTag.includes(subDomain)) {
+      toDelete.push(image);
     }
-  }));
+  });
+  if (toDelete.length > 0) {
+    const ecrClient = createEcr({ awsRegion });
+    try {
+      const res = await ecrClient.batchDeleteImage({ imageIds: toDelete, repositoryName }).promise();
+      if (res.failures && res.failures.length > 0) {
+        console.log(`Could not delete images for repo: ${repositoryName}`);
+        return res.failures;
+      }
+      console.log(`Deleted image for repo: ${repositoryName}`, res.imageIds);
+      console.log(res);
+      return res;
+    } catch (err) {
+      console.log(`Could not delete images for repo: ${repositoryName}`);
+      console.log(err);
+      return err;
+    }
+  }
+  return Promise.resolve();
+};
 
 const putLifecyclePolicy = async ({ awsRegion, repositoryName }) => {
   const ecrClient = createEcr({ awsRegion });
