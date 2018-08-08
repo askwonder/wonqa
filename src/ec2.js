@@ -13,7 +13,9 @@ const getPublicIP = ({ awsRegion, runningTask }) => new Promise((resolve, reject
   const params = { NetworkInterfaceIds: [eniID] };
   ec2Client.describeNetworkInterfaces(params, (err, data) => {
     if (err) { return reject(err); }
-    return resolve(data);
+    const { NetworkInterfaces } = data;
+    const { PublicIp } = (NetworkInterfaces[0] || {}).Association || {};
+    return resolve(PublicIp);
   });
 });
 

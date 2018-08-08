@@ -57,11 +57,11 @@ const defaultCreateDNSRecords = ({
   dnsimpleAccountID,
   rootDomain,
   subDomain,
-  PublicIp,
+  publicIp,
 }) => new Promise((resolve, reject) => {
   const dnsClient = createDNS({ dnsimpleToken });
   const scope = {};
-  console.log(`Creating DNS records for IP ${PublicIp}`);
+  console.log(`Creating DNS records for IP ${publicIp}`);
   dnsClient.zones
     .allZoneRecords(dnsimpleAccountID, rootDomain)
     .then((data) => {
@@ -71,7 +71,7 @@ const defaultCreateDNSRecords = ({
         ({ type, name }) => type === 'A' && name === subDomain,
       );
       if (aRecords.length > 0) {
-        const attributes = { content: PublicIp, name: subDomain };
+        const attributes = { content: publicIp, name: subDomain };
         return updateRecords({
           dnsimpleToken,
           dnsimpleAccountID,
@@ -84,7 +84,7 @@ const defaultCreateDNSRecords = ({
         name: subDomain,
         type: 'A',
         ttl: 60,
-        content: PublicIp,
+        content: publicIp,
       };
       return createRecord({
         dnsimpleToken,
@@ -134,14 +134,13 @@ const createDNSRecords = ({
   rootDomain,
   subDomain,
   userCreateDNSRecords,
-  NetworkInterfaces = [],
+  publicIp,
 }) => new Promise((resolve, reject) => {
-  const { PublicIp } = (NetworkInterfaces[0] || {}).Association || {};
-  if (!PublicIp || typeof PublicIp !== 'string') {
-    return reject(new Error('Could not find PublicIp'));
+  if (!publicIp || typeof publicIp !== 'string') {
+    return reject(new Error('Could not find publicIp'));
   }
   if (userCreateDNSRecords) {
-    return userCreateDNSRecords(PublicIp)
+    return userCreateDNSRecords(publicIp)
       .then(() => resolve())
       .catch(error => reject(error));
   }
@@ -150,7 +149,7 @@ const createDNSRecords = ({
     dnsimpleAccountID,
     rootDomain,
     subDomain,
-    PublicIp,
+    publicIp,
   })
     .then(() => resolve())
     .catch(error => reject(error));

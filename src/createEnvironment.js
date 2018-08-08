@@ -23,7 +23,7 @@ const {
   createDNSRecords,
 } = require('./dns');
 
-const createEnvironment = ({
+const createEnvironment = async ({
   WONQA_DIR,
   awsAccountID,
   awsRegion,
@@ -44,12 +44,12 @@ const createEnvironment = ({
   awsLogsStreamPrefix,
   createDNSRecords: userCreateDNSRecords,
   onSuccess: userOnSuccess,
-} = {}) => new Promise((resolve, reject) => {
-  const scope = {};
-  ensureAuthenticated({ awsRegion, iamUsername })
-    .then(() => confirmRegion({ awsRegion }))
-    .then(() => getCluster({ awsRegion, clusterName }))
-    .then(() => createTaskDefinition({
+} = {}) => {
+  try {
+    await ensureAuthenticated({ awsRegion, iamUsername });
+    await confirmRegion({ awsRegion });
+    await getCluster({ awsRegion, clusterName });
+    const task = await createTaskDefinition({
       awsRegion,
       awsAccountID,
       subDomain,
@@ -60,47 +60,43 @@ const createEnvironment = ({
       awsLogsGroup,
       awsLogsRegion,
       awsLogsStreamPrefix,
-    }))
-    .then(task => registerTaskDefinition({ awsRegion, task }))
-    .then((taskDefinition) => {
-      scope.taskDefinition = taskDefinition;
-      return runTask({
-        awsRegion,
-        clusterName,
-        subnets,
-        securityGroups,
-        taskDefinition,
-      });
-    })
-    .then(taskArn => saveTaskID({ WONQA_DIR, taskArn }))
-    .then(taskArn => waitForTaskRunning({ awsRegion, clusterName, taskArn }))
-    .then((runningTask) => {
-      scope.runningTask = runningTask;
-      return getPublicIP({ awsRegion, runningTask });
-    })
-    .then(({ NetworkInterfaces }) => createDNSRecords({
+    });
+    const taskDefinition = await registerTaskDefinition({ awsRegion, task });
+    const taskArn = await runTask({
+      awsRegion,
+      clusterName,
+      subnets,
+      securityGroups,
+      taskDefinition,
+    });
+    await saveTaskID({ WONQA_DIR, taskArn });
+    const runningTask = await waitForTaskRunning({ awsRegion, clusterName, taskArn });
+    const publicIp = await getPublicIP({ awsRegion, runningTask });
+    await createDNSRecords({
       dnsimpleAccountID,
       dnsimpleToken,
       rootDomain,
       subDomain,
       userCreateDNSRecords,
-      NetworkInterfaces,
-    }))
-    .then(() => waitForQAEnvAvailable({ rootDomain, subDomain }))
-    .then(() => onSuccess({ userOnSuccess, rootDomain, subDomain }))
-    .then(() => stopPreviousTasks({
+      publicIp,
+    });
+    await waitForQAEnvAvailable({ rootDomain, subDomain });
+    await onSuccess({ userOnSuccess, rootDomain, subDomain });
+    await stopPreviousTasks({
       awsRegion,
       subDomain,
       clusterName,
-      revision: scope.taskDefinition.revision,
-    }))
-    .then(() => deregisterPreviousTaskDefinitions({
+      revision: taskDefinition.revision,
+    });
+    await deregisterPreviousTaskDefinitions({
       awsRegion,
       subDomain,
-      revision: scope.taskDefinition.revision,
-    }))
-    .then(() => resolve(scope.runningTask))
-    .catch(error => reject(error));
-});
+      revision: taskDefinition.revision,
+    });
+    return runningTask;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
 module.exports = createEnvironment;
