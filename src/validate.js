@@ -61,9 +61,9 @@ const validateHTTPSOptions = ({
     throw new Error('cachePath is undefined');
   }
   if (configurationPath) {
-    const stats = fs.lstatSync(cachePath);
+    const stats = fs.lstatSync(configurationPath);
     if (!stats.isFile()) {
-      throw new Error('nginx.configurationPath is not a path to a directory');
+      throw new Error('nginx.configurationPath is not a path to a file');
     }
   } else {
     validateNginxConf(servers);
