@@ -51,9 +51,17 @@ const buildAndPush = ({
 });
 
 
-const writeConfFile = ({ WONQA_DIR, servers }) => new Promise((resolve, reject) => {
-  const serverConfig = (port, serverName) => {
-    return `
+const writeConfFile = ({
+  WONQA_DIR,
+  servers,
+  configurationPath,
+}) => new Promise((resolve, reject) => {
+  let config;
+
+  if (configurationPath) {
+    config = fs.readFileSync(configurationPath);
+  } else {
+    const serverConfig = (port, serverName) => `
   server {
     ${serverName ? (`listen 443 ssl; \n    server_name ${serverName}.*;`) : 'listen 443 ssl default_server;'}
     location / {
@@ -67,11 +75,10 @@ const writeConfFile = ({ WONQA_DIR, servers }) => new Promise((resolve, reject) 
       proxy_set_header    Connection        "upgrade";
     }
   }`;
-  };
 
-  const s = servers.map(({ port, serverName }) => serverConfig(port, serverName));
+    const s = servers.map(({ port, serverName }) => serverConfig(port, serverName));
 
-  const config = `
+    config = `
 http {
   ssl_certificate     /etc/ssl/fullchain1.pem;
   ssl_certificate_key /etc/ssl/privkey1.pem;
@@ -86,7 +93,8 @@ events {
   accept_mutex on;
   worker_connections 1024;
 } 
-  `;
+    `;
+  }
 
   writeFilePromise(`${WONQA_DIR}/nginx/ecs-nginx.conf`, config)
     .then((buf = '') => resolve(buf.toString()))

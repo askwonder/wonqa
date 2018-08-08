@@ -38,6 +38,7 @@ const validateHTTPSOptions = ({
   email,
   cachePath,
   nginx: {
+    configurationPath,
     servers,
     imageRepositoryPath,
     awsLogsGroup,
@@ -59,7 +60,14 @@ const validateHTTPSOptions = ({
   } else {
     throw new Error('cachePath is undefined');
   }
-  validateNginxConf(servers);
+  if (configurationPath) {
+    const stats = fs.lstatSync(cachePath);
+    if (!stats.isFile()) {
+      throw new Error('nginx.configurationPath is not a path to a directory');
+    }
+  } else {
+    validateNginxConf(servers);
+  }
   if (imageRepositoryPath && typeof imageRepositoryPath !== 'string') {
     throw new Error('imageRepositoryPath should be a string');
   }
