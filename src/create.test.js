@@ -49,6 +49,7 @@ describe('create', () => {
   const createDNSRecords = jest.fn();
   const onSuccess = jest.fn();
   const cachePath = getString();
+  const configurationPath = getString();
 
   it('configure()', async () => {
     await create({ WONQA_DIR, aws: { awsRegion } });
@@ -58,6 +59,11 @@ describe('create', () => {
   it('writeConfFile()', async () => {
     await create({ WONQA_DIR, https: { nginx: { servers } } });
     expect(writeConfFile).toBeCalledWith({ WONQA_DIR, servers });
+  });
+
+  it('writeConfFile()', async () => {
+    await create({ WONQA_DIR, https: { nginx: { configurationPath } } });
+    expect(writeConfFile).toBeCalledWith({ WONQA_DIR, configurationPath });
   });
 
   it('ssl()', async () => {
