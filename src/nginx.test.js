@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const {
   writeConfFile,
 } = require('./nginx');
@@ -27,6 +29,12 @@ describe('utils', () => {
     'accept_mutex on;',
     'worker_connections 1024;',
   ]);
+
+  test('writeConfFile :: allows file to be overriden with custom file', async () => {
+    fs.readFileSync.mockReturnValue('foo');
+    const file = await writeConfFile({ WONQA_DIR: './', configurationPath: '/Users/bob/foo.conf' });
+    expect(file).toBe('foo');
+  });
 
   test('writeConfFile :: creates the nginx config with a default server', async () => {
     const servers = [
