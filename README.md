@@ -192,7 +192,7 @@ If you prefer a custom implementation, you can pass a `createDNSRecords` functio
 
 - `cachePath` [string] **required**: The path to a local directory wonqa will use to cache your SSL certificates.
 
-- `configurationPath` [string] **required unless `nginx.servers`**: The path to a local file containing your nginx configuration. For a sample configuration, see this <a href="#nginx-config">example</a>
+- `configurationPath` [string] **required unless `nginx.servers`**: The path to a local file containing your nginx configuration. For a sample configuration, see this [example](/askwonder/wonder/blob/master/examples/nginx.conf)
 
 - `servers` [array] **required unless `nginx.configurationPath`**: an array of objects defining the server names and ports used by wonqa to generate the [nginx config](https://nginx.org/en/docs/http/server_names.html) used to build the nginx image. This image will be used by a container which will proxy SSL traffic to the containers with your app code living inside the [AWS Fargate network](https://aws.amazon.com/blogs/compute/task-networking-in-aws-fargate/). This array should contain at least one object defining the base port that your app listens on, for eg: `[{ default: true, port: 8000 }]`. If your app uses multiple domains and ports (one for a client bundle and one for a backend bundle, for example), wonqa will need to generate SSL certificates for each additional domain as well as configure nginx to proxy traffic to each domain/port. In this case, provide additional objects in this array to define the subdomains and ports used. For eg: `[{ default: true, port: 8000 }, { serverName: 'api', port: 3000 }]` will allow your environment to be accessible at `<subDomain>.<rootDomain>` (traffic will be proxied to this URL on port 8000) and `api.<subDomain>.<rootDomain>` (traffic will be proxied to this URL on port 3000). !! The `serverName` values should be in lowercase.
 
@@ -268,51 +268,3 @@ If you use AWS's ECR service to host your images, you may want to consider addin
 If you run `init()` more than once, you'll see errors as wonqa tries to create resources that have already been created by a previous call. You'll need to log into the AWS console to delete these resources and try again.
 
 If the `wonqa.create()` runs but you are unable to accessing your environment causes a timeout (for eg., if it hangs on `Waiting for your QA env to return a 200 OK`), this probably means that the security group that you are using does not have ingress rules for HTTP and HTTPS as well as the rules required by your app to work.
-
-
-## NGINX Config
-
-```
-http {
-  ssl_certificate     /etc/ssl/fullchain1.pem;
-  ssl_certificate_key /etc/ssl/privkey1.pem;
-
-  map $http_upgrade $connection_upgrade {
-    default upgrade;
-    ''      close;
-  }
-
-  server {
-    listen 443 ssl;
-    server_name api.*;
-    location / {
-      proxy_pass http://localhost:3000/;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header Host $http_host;
-      proxy_redirect off;
-      proxy_http_version 1.1;
-      proxy_set_header    Upgrade           $http_upgrade;
-      proxy_set_header    Connection        "upgrade";
-    }
-  }
-
-  server {
-    listen 443 ssl default_server;
-    location / {
-      proxy_pass http://localhost:8000/;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header Host $http_host;
-      proxy_redirect off;
-      proxy_http_version 1.1;
-      proxy_set_header    Upgrade           $http_upgrade;
-      proxy_set_header    Connection        "upgrade";
-    }
-}
-
-events {
-  accept_mutex on;
-  worker_connections 1024;
-}
-```
