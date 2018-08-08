@@ -173,47 +173,42 @@ const deleteRecord = ({
     .catch(err => reject(err));
 });
 
-const deleteDNSRecords = ({
+const deleteDNSRecords = async ({
   dnsimpleToken,
   dnsimpleAccountID,
   rootDomain,
   subDomain,
-}) => new Promise((resolve, reject) => {
+}) => {
   const dnsClient = createDNS({ dnsimpleToken });
-  dnsClient
-    .zones
-    .allZoneRecords(dnsimpleAccountID, rootDomain)
-    .then((data) => {
-      const promises = [];
-      const aRecords = data.filter(
-        ({ type, name }) => type === 'A' && name === subDomain,
-      );
-      if (aRecords.length > 0) {
-        const delete$ = aRecords.map(record => deleteRecord({
-          dnsimpleToken,
-          dnsimpleAccountID,
-          rootDomain,
-          record,
-        }));
-        promises.push(...delete$);
-      }
-      const cNames = data.filter(
-        ({ type, name }) => type === 'CNAME' && name === `*.${subDomain}`,
-      );
-      if (cNames.length > 0) {
-        const delete$ = cNames.map(record => deleteRecord({
-          dnsimpleToken,
-          dnsimpleAccountID,
-          rootDomain,
-          record,
-        }));
-        promises.push(...delete$);
-      }
-      return Promise.all(promises);
-    })
-    .then(() => resolve())
-    .catch(err => reject(err));
-});
+  const data = await dnsClient.zones.allZoneRecords(dnsimpleAccountID, rootDomain);
+  const promises = [];
+  const aRecords = data.filter(({ type, name }) => type === 'A' && name === subDomain);
+  if (aRecords.length > 0) {
+    const delete$ = aRecords.map(record => deleteRecord({
+      dnsimpleToken,
+      dnsimpleAccountID,
+      rootDomain,
+      record,
+    }));
+    promises.push(...delete$);
+  }
+  const cNames = data.filter(({ type, name }) => type === 'CNAME' && name === `*.${subDomain}`);
+  if (cNames.length > 0) {
+    const delete$ = cNames.map(record => deleteRecord({
+      dnsimpleToken,
+      dnsimpleAccountID,
+      rootDomain,
+      record,
+    }));
+    promises.push(...delete$);
+  }
+  try {
+    const res = await Promise.all(promises);
+    return res;
+  } catch (e) {
+    throw new Error(e);
+  }
+};
 
 module.exports = {
   createDNSRecords,
