@@ -2,6 +2,7 @@
 
 set -e # exit on non 0 codes
 set -u # error out on failed param expansion
+set -x # print commands
 
 which docker || (
   echo >&2 "Please install docker (https://docs.docker.com/docker-for-mac/install/) and run: docker login"
@@ -10,6 +11,10 @@ which docker || (
 
 ARCHIVE="etc/letsencrypt/archive/$subDomain.$rootDomain/"
 CERT_DIR="$cachePath/$ARCHIVE"
+
+echo "Cache path: $cachePath"
+echo "Currently in cache:"
+ls "./etc/letsencrypt/archive/" || echo "./etc/letsencrypt/archive/ is not a directory"
 
 if [[ ! -d $CERT_DIR ]]; then
   # Generate cert

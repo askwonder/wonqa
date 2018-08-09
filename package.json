@@ -1,6 +1,6 @@
 {
   "name": "wonqa",
-  "version": "0.0.110",
+  "version": "0.0.111",
   "description": "On-demand test environments",
   "main": "src/index.js",
   "scripts": {
