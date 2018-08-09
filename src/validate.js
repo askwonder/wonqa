@@ -17,7 +17,7 @@ const validateSubDomain = (subDomain) => {
   }
 };
 
-const validateNginxConf = (servers) => {
+const validateNginxServersConf = (servers) => {
   if (!Array.isArray(servers)) {
     throw new Error('servers must be an array');
   }
@@ -30,6 +30,28 @@ const validateNginxConf = (servers) => {
   const serverNames = servers.filter(el => el.serverName);
   if (serverNames && !serverNames.every(el => el.serverName === el.serverName.toLowerCase())) {
     throw new Error('Every serverName value must be in lowercase');
+  }
+};
+
+const validateNginxConf = (servers, configurationPath) => {
+  if (configurationPath) {
+    const stats = fs.lstatSync(configurationPath);
+    if (!stats.isFile()) {
+      throw new Error('nginx.configurationPath is not a path to a file');
+    }
+    const config = fs.readFileSync(configurationPath);
+    const expectedConfigs = [
+      'http {',
+      'ssl_certificate     /etc/ssl/fullchain1.pem;',
+      'ssl_certificate_key /etc/ssl/privkey1.pem;',
+    ];
+    expectedConfigs.forEach((el) => {
+      if (!config.includes(el)) {
+        throw new Error(`NGINX configuration missing '${el}'`);
+      }
+    });
+  } else {
+    validateNginxServersConf(servers);
   }
 };
 
@@ -60,14 +82,7 @@ const validateHTTPSOptions = ({
   } else {
     throw new Error('cachePath is undefined');
   }
-  if (configurationPath) {
-    const stats = fs.lstatSync(configurationPath);
-    if (!stats.isFile()) {
-      throw new Error('nginx.configurationPath is not a path to a file');
-    }
-  } else {
-    validateNginxConf(servers);
-  }
+  validateNginxConf(servers, configurationPath);
   if (imageRepositoryPath && typeof imageRepositoryPath !== 'string') {
     throw new Error('imageRepositoryPath should be a string');
   }

@@ -60,16 +60,6 @@ const writeConfFile = ({
 
   if (configurationPath) {
     config = fs.readFileSync(configurationPath);
-    const expectedConfigs = [
-      'http {',
-      'ssl_certificate     /etc/ssl/fullchain1.pem;',
-      'ssl_certificate_key /etc/ssl/privkey1.pem;',
-    ];
-    expectedConfigs.forEach((el) => {
-      if (!config.includes(el)) {
-        throw new Error(`NGINX configuration missing '${el}'`);
-      }
-    });
   } else {
     const serverConfig = (port, serverName) => `
   server {
