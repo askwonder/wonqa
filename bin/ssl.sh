@@ -14,7 +14,7 @@ CERT_DIR="$cachePath/$ARCHIVE"
 
 echo "Cache path: $cachePath"
 echo "Currently in cache:"
-ls "./etc/letsencrypt/archive/" || echo "./etc/letsencrypt/archive/ is not a directory"
+ls "$cachePath/etc/letsencrypt/archive/" || echo "$cachePath/etc/letsencrypt/archive/ is not a directory"
 
 if [[ ! -d $CERT_DIR ]]; then
   # Generate cert
