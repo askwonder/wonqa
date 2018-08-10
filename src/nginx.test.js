@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const {
   writeConfFile,
 } = require('./nginx');
@@ -27,6 +29,24 @@ describe('utils', () => {
     'accept_mutex on;',
     'worker_connections 1024;',
   ]);
+
+  test('writeConfFile :: allows file to be overriden with custom file', async () => {
+    const servers = [
+      {
+        default: true,
+        port: 3000,
+      },
+    ];
+    const config = `
+http {
+  ssl_certificate     /etc/ssl/fullchain1.pem;
+  ssl_certificate_key /etc/ssl/privkey1.pem;
+}
+    `;
+    fs.readFileSync.mockReturnValue(config);
+    const file = await writeConfFile({ WONQA_DIR: './', servers, configurationPath: '/Users/bob/foo.conf' });
+    expect(file).toBe(config);
+  });
 
   test('writeConfFile :: creates the nginx config with a default server', async () => {
     const servers = [

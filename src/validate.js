@@ -17,7 +17,7 @@ const validateSubDomain = (subDomain) => {
   }
 };
 
-const validateNginxConf = (servers) => {
+const validateNginxServersConf = (servers) => {
   if (!Array.isArray(servers)) {
     throw new Error('servers must be an array');
   }
@@ -33,11 +33,33 @@ const validateNginxConf = (servers) => {
   }
 };
 
+const validateNginxConf = (servers, configurationPath) => {
+  validateNginxServersConf(servers);
+  if (configurationPath) {
+    const stats = fs.lstatSync(configurationPath);
+    if (!stats.isFile()) {
+      throw new Error('nginx.configurationPath is not a path to a file');
+    }
+    const config = fs.readFileSync(configurationPath);
+    const expectedConfigs = [
+      'http {',
+      'ssl_certificate     /etc/ssl/fullchain1.pem;',
+      'ssl_certificate_key /etc/ssl/privkey1.pem;',
+    ];
+    expectedConfigs.forEach((el) => {
+      if (!config.includes(el)) {
+        throw new Error(`NGINX configuration missing '${el}'`);
+      }
+    });
+  }
+};
+
 const validateHTTPSOptions = ({
   dnsimpleToken,
   email,
   cachePath,
   nginx: {
+    configurationPath,
     servers,
     imageRepositoryPath,
     awsLogsGroup,
@@ -59,7 +81,7 @@ const validateHTTPSOptions = ({
   } else {
     throw new Error('cachePath is undefined');
   }
-  validateNginxConf(servers);
+  validateNginxConf(servers, configurationPath);
   if (imageRepositoryPath && typeof imageRepositoryPath !== 'string') {
     throw new Error('imageRepositoryPath should be a string');
   }

@@ -15,6 +15,7 @@ const create = ({
     cachePath,
     nginx: {
       servers,
+      configurationPath,
       imageRepositoryPath,
       awsLogsGroup,
       awsLogsRegion,
@@ -46,7 +47,7 @@ const create = ({
 }) => {
   const scope = {};
   return configure({ WONQA_DIR, awsRegion })
-    .then(() => writeConfFile({ WONQA_DIR, servers }))
+    .then(() => writeConfFile({ WONQA_DIR, servers, configurationPath }))
     .then(() => ssl({
       rootDomain,
       subDomain,
