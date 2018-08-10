@@ -31,6 +31,12 @@ describe('utils', () => {
   ]);
 
   test('writeConfFile :: allows file to be overriden with custom file', async () => {
+    const servers = [
+      {
+        default: true,
+        port: 3000,
+      },
+    ];
     const config = `
 http {
   ssl_certificate     /etc/ssl/fullchain1.pem;
@@ -38,14 +44,8 @@ http {
 }
     `;
     fs.readFileSync.mockReturnValue(config);
-    const file = await writeConfFile({ WONQA_DIR: './', configurationPath: '/Users/bob/foo.conf' });
+    const file = await writeConfFile({ WONQA_DIR: './', servers, configurationPath: '/Users/bob/foo.conf' });
     expect(file).toBe(config);
-  });
-
-  test('writeConfFile :: throws an error if the file does not have expected configs', async () => {
-    fs.readFileSync.mockReturnValue('foo');
-    const result = writeConfFile({ WONQA_DIR: './', configurationPath: '/Users/bob/foo.conf' });
-    await expect(result).rejects.toBeInstanceOf(Error);
   });
 
   test('writeConfFile :: creates the nginx config with a default server', async () => {

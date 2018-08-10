@@ -34,6 +34,7 @@ const validateNginxServersConf = (servers) => {
 };
 
 const validateNginxConf = (servers, configurationPath) => {
+  validateNginxServersConf(servers);
   if (configurationPath) {
     const stats = fs.lstatSync(configurationPath);
     if (!stats.isFile()) {
@@ -50,8 +51,6 @@ const validateNginxConf = (servers, configurationPath) => {
         throw new Error(`NGINX configuration missing '${el}'`);
       }
     });
-  } else {
-    validateNginxServersConf(servers);
   }
 };
 

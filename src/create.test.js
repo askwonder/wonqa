@@ -62,8 +62,8 @@ describe('create', () => {
   });
 
   it('writeConfFile()', async () => {
-    await create({ WONQA_DIR, https: { nginx: { configurationPath } } });
-    expect(writeConfFile).toBeCalledWith({ WONQA_DIR, configurationPath });
+    await create({ WONQA_DIR, https: { nginx: { servers, configurationPath } } });
+    expect(writeConfFile).toBeCalledWith({ WONQA_DIR, servers, configurationPath });
   });
 
   it('ssl()', async () => {
