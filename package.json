@@ -1,6 +1,6 @@
 {
   "name": "wonqa",
-  "version": "0.0.115",
+  "version": "0.0.117",
   "description": "On-demand test environments",
   "main": "src/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "octokat": "^0.10.0"
   },
   "devDependencies": {
-    "aws-sdk-mock": "^4.0.0",
+    "aws-sdk-mock": "^4.3.0",
     "babel-eslint": "^8.2.6",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",
@@ -27,7 +27,18 @@
     "eslint-plugin-react": "^7.10.0",
     "jest": "^23.6.0"
   },
-  "keywords": ["aws", "fargate", "ecs", "docker", "dns", "qa", "testing", "ssl", "https", "aws-sdk"],
+  "keywords": [
+    "aws",
+    "fargate",
+    "ecs",
+    "docker",
+    "dns",
+    "qa",
+    "testing",
+    "ssl",
+    "https",
+    "aws-sdk"
+  ],
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,mjs}"
