@@ -1,6 +1,6 @@
 {
   "name": "wonqa",
-  "version": "0.0.118",
+  "version": "0.0.119",
   "description": "On-demand test environments",
   "main": "src/index.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "aws-sdk": "^2.273.1",
     "dnsimple": "^2.7.0",
     "eslint": "^5.1.0",
+    "lodash": "^4.17.11",
     "octokat": "^0.10.0"
   },
   "devDependencies": {
