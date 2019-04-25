@@ -220,7 +220,7 @@ const findTask = ({
         return resolve(task);
       }
       // not rejecting as we want the chain to keep going
-      console.log(`Could not find a task matching branch: ${subDomain}`);
+      console.log(`Could not find a task matching branch: ${subDomain}. All tasks: ${JSON.stringify(tasks)}`);
       return resolve();
     }
     return resolve();
