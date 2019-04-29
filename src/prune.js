@@ -43,18 +43,26 @@ const prune = ({
       clusterName,
       subDomain,
     }))
+    // eslint-disable-next-line consistent-return
     .then((task) => {
-      scope.task = task;
-      return stopTask({
-        awsRegion,
-        clusterName,
-        taskArn: task.taskArn,
-      });
+      if (task) {
+        scope.task = task;
+        return stopTask({
+          awsRegion,
+          clusterName,
+          taskArn: task.taskArn,
+        });
+      }
     })
-    .then(() => deregisterTaskDefinition({
-      awsRegion,
-      task: scope.task,
-    }))
+    // eslint-disable-next-line consistent-return
+    .then(() => {
+      if (scope.task) {
+        return deregisterTaskDefinition({
+          awsRegion,
+          task: scope.task,
+        });
+      }
+    })
     .then(() => deleteImages({
       awsRegion,
       subDomain,
