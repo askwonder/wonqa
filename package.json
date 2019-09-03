@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.273.1",
-    "dnsimple": "^2.7.0",
+    "dnsimple": "^3.0.1",
     "eslint": "^5.1.0",
     "lodash": "^4.17.11",
     "octokat": "^0.10.0"
