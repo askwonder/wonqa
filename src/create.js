@@ -28,6 +28,8 @@ const create = ({
     dnsimpleToken: DNSdnsimpleToken,
     dnsimpleAccountID: DNSdnsimpleAccountID,
     createDNSRecords,
+    dnsProvider,
+    hostedZoneId
   } = {},
   aws: {
     awsAccountID,
@@ -48,15 +50,16 @@ const create = ({
   const scope = {};
   return configure({ WONQA_DIR, awsRegion })
     .then(() => writeConfFile({ WONQA_DIR, servers, configurationPath }))
-    .then(() => ssl({
+    .then(() => {ssl({
       rootDomain,
       subDomain,
       servers,
       email,
       dnsimpleToken,
+      dnsProvider,
       cachePath,
       WONQA_DIR,
-    }))
+    })})
     .then(() => buildAndPushNginx({
       awsAccountID,
       awsRegion,
@@ -91,6 +94,8 @@ const create = ({
       awsLogsStreamPrefix,
       createDNSRecords,
       onSuccess,
+      dnsProvider,
+      hostedZoneId,
     }))
     .then((task) => {
       scope.task = task;

@@ -1,4 +1,5 @@
 const dns = require('dnsimple');
+const AWS = require('aws-sdk');
 
 let dnsimple;
 const createDNS = ({ dnsimpleToken: accessToken }) => {
@@ -50,6 +51,44 @@ const createRecord = ({
       return resolve(res);
     })
     .catch(err => reject(err));
+});
+
+const route53CreateDNSRecords = ({
+  rootDomain,
+  subDomain,
+  hostedZoneId,
+  publicIp
+}) => new Promise((resolve,reject) => {
+  
+  var params = {
+    ChangeBatch: {
+    Changes: [
+        {
+      Action: "UPSERT", 
+      ResourceRecordSet: {
+        Name: subDomain+'.'+rootDomain, 
+        ResourceRecords: [
+          {
+          Value: publicIp
+        }
+        ], 
+        TTL: 60, 
+        Type: "A"
+      }
+      }
+    ], 
+    Comment: "Test Instance"
+    }, 
+    HostedZoneId: hostedZoneId
+  };
+
+
+  const route53 = new AWS.Route53();
+  
+  route53.changeResourceRecordSets(params, (err, data)=>{
+    if (err) {console.log(err);reject(err);} // an error occurred
+    else  {console.log(data);resolve(data);     }      // successful response
+  })
 });
 
 const defaultCreateDNSRecords = ({
@@ -133,26 +172,40 @@ const createDNSRecords = ({
   dnsimpleToken,
   rootDomain,
   subDomain,
+  dnsProvider,
   userCreateDNSRecords,
+  hostedZoneId,
   publicIp,
 }) => new Promise((resolve, reject) => {
   if (!publicIp || typeof publicIp !== 'string') {
     return reject(new Error('Could not find publicIp'));
   }
   if (userCreateDNSRecords) {
-    return userCreateDNSRecords(publicIp)
+    return userCreateDNSRecords(publicIp, rootDomain, subDomain)
+      .then(() => resolve())
+      .catch(error => reject(error));
+  }else if (dnsProvider == 'ROUTE_53'){
+    return route53CreateDNSRecords({
+      rootDomain,
+      subDomain,
+      publicIp,
+      hostedZoneId
+    })
+      .then(() => resolve())
+      .catch(error => reject(error))
+
+  } else {
+
+    return defaultCreateDNSRecords({
+      dnsimpleToken,
+      dnsimpleAccountID,
+      rootDomain,
+      subDomain,
+      publicIp,
+    })
       .then(() => resolve())
       .catch(error => reject(error));
   }
-  return defaultCreateDNSRecords({
-    dnsimpleToken,
-    dnsimpleAccountID,
-    rootDomain,
-    subDomain,
-    publicIp,
-  })
-    .then(() => resolve())
-    .catch(error => reject(error));
 });
 
 const deleteRecord = ({

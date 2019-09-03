@@ -44,6 +44,8 @@ const createEnvironment = async ({
   awsLogsStreamPrefix,
   createDNSRecords: userCreateDNSRecords,
   onSuccess: userOnSuccess,
+  dnsProvider,
+  hostedZoneId
 } = {}) => {
   try {
     await ensureAuthenticated({ awsRegion, iamUsername });
@@ -70,7 +72,7 @@ const createEnvironment = async ({
       taskDefinition,
     });
     await saveTaskID({ WONQA_DIR, taskArn });
-    const runningTask = await waitForTaskRunning({ awsRegion, clusterName, taskArn });
+    const runningTask = await waitForTaskRunning({ awsRegion, clusterName, taskArn });console.log("Get public IP")
     const publicIp = await getPublicIP({ awsRegion, runningTask });
     await createDNSRecords({
       dnsimpleAccountID,
@@ -79,6 +81,8 @@ const createEnvironment = async ({
       subDomain,
       userCreateDNSRecords,
       publicIp,
+      dnsProvider,
+      hostedZoneId
     });
     await waitForQAEnvAvailable({ rootDomain, subDomain });
     await onSuccess({ userOnSuccess, rootDomain, subDomain });

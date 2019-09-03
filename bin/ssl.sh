@@ -13,21 +13,42 @@ ARCHIVE="etc/letsencrypt/archive/$subDomain.$rootDomain/"
 CERT_DIR="$cachePath/$ARCHIVE"
 
 echo "Cache path: $cachePath"
+if [[ ! -d "$cachePath/etc/letsencrypt/archive" ]]; then
+  mkdir -p "$cachePath/etc/letsencrypt/archive"
+fi
+
 echo "Currently in cache:"
 ls "$cachePath/etc/letsencrypt/archive/" || echo "$cachePath/etc/letsencrypt/archive/ is not a directory"
 
 if [[ ! -d $CERT_DIR ]]; then
   # Generate cert
   cd "$WONQA_DIR"
-  docker build -t "wonqa-certbot" -f "dnsimple/Dockerfile" .
-  docker run -i --name wonqa-certbot wonqa-certbot:latest \
-    certonly \
-    --dns-dnsimple \
-    --dns-dnsimple-credentials dnsimple.ini \
-    --agree-tos \
-    --no-eff-email \
-    -m $email \
-    -d "$domains"
+  if [[ $dnsProvider == 'DNS_SIMPLE' ]]; then
+    docker build -t "wonqa-certbot" -f "dnsimple/Dockerfile" .
+    docker run -i --name wonqa-certbot wonqa-certbot:latest \
+      certonly \
+      --dns-dnsimple \
+      --dns-dnsimple-credentials dnsimple.ini \
+      --agree-tos \
+      --no-eff-email \
+      -m $email \
+      -d "$domains"
+  elif [[ $dnsProvider == 'ROUTE_53' ]]; then
+    AWS_ACCESS_KEY_ID=$(aws --profile default configure get aws_access_key_id)
+    AWS_SECRET_ACCESS_KEY=$(aws --profile default configure get aws_secret_access_key)
+
+    docker build -t "wonqa-certbot" -f "route53/Dockerfile" .
+    docker run -i --name wonqa-certbot \
+      -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+      -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+      wonqa-certbot:latest \
+      certonly \
+      -m $email \
+      --dns-route53 \
+      -d "$domains"\
+      --agree-tos \
+      --no-eff-email
+  fi
 
   # Move cert to common location for Dockerfile build
   mkdir -p $CERT_DIR

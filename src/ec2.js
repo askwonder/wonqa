@@ -5,16 +5,16 @@ const {
 
 const createEc2 = ({ awsRegion } = {}) => new AWS.EC2({ region: awsRegion });
 
-const getPublicIP = ({ awsRegion, runningTask }) => new Promise((resolve, reject) => {
+const getPublicIP = ({ awsRegion, runningTask }) => new Promise((resolve, reject) => {console.log("Inside get public ip")
   const ec2Client = createEc2({ awsRegion });
   const eniID = runningTask.attachments[0].details.find(
     el => el.name === 'networkInterfaceId',
   ).value;
   const params = { NetworkInterfaceIds: [eniID] };
   ec2Client.describeNetworkInterfaces(params, (err, data) => {
-    if (err) { return reject(err); }
+    if (err) { console.log(err); return reject(err); }
     const { NetworkInterfaces } = data;
-    const { PublicIp } = (NetworkInterfaces[0] || {}).Association || {};
+    const { PublicIp } = (NetworkInterfaces[0] || {}).Association || {};console.log("***"+PublicIp)
     return resolve(PublicIp);
   });
 });

@@ -1,0 +1,1 @@
+FROM certbot/dns-route53:v0.37.2

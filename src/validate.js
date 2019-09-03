@@ -56,6 +56,7 @@ const validateNginxConf = (servers, configurationPath) => {
 
 const validateHTTPSOptions = ({
   dnsimpleToken,
+  dnsProvider,
   email,
   cachePath,
   nginx: {
@@ -67,7 +68,7 @@ const validateHTTPSOptions = ({
     awsLogsStreamPrefix,
   } = {},
 }) => {
-  if (!dnsimpleToken || typeof dnsimpleToken !== 'string') {
+  if (dnsProvider == 'DNSIMPLE' && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
     throw new Error('Missing https.dnsimpleToken required to create SSL certificates');
   }
   if (!email || typeof email !== 'string') {
@@ -99,6 +100,7 @@ const validateHTTPSOptions = ({
 const validateDNSOptions = ({
   rootDomain,
   subDomain,
+  dnsProvider,
   dnsimpleToken: DNSdnsimpleToken,
   dnsimpleAccountID: DNSdnsimpleAccountID,
   createDNSRecords,
@@ -113,10 +115,10 @@ const validateDNSOptions = ({
   if (createDNSRecords && typeof createDNSRecords !== 'function') {
     throw new Error('createDNSRecords must be a function');
   }
-  if (!createDNSRecords && !DNSdnsimpleToken) {
+  if (dnsProvider == 'DNSIMPLE' && !createDNSRecords && !DNSdnsimpleToken) {
     throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleToken value');
   }
-  if (!createDNSRecords && typeof DNSdnsimpleAccountID !== 'string') {
+  if (dnsProvider == 'DNSIMPLE' && !createDNSRecords && typeof DNSdnsimpleAccountID !== 'string') {
     throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleAccountID value');
   }
 };
