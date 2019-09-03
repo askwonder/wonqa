@@ -86,8 +86,8 @@ const route53CreateDNSRecords = ({
   const route53 = new AWS.Route53();
   
   route53.changeResourceRecordSets(params, (err, data)=>{
-    if (err) {console.log(err);reject(err);} // an error occurred
-    else  {console.log(data);resolve(data);     }      // successful response
+    if (err) { reject(err);}          // an error occurred
+    else  { resolve(data);     }      // successful response
   })
 });
 
