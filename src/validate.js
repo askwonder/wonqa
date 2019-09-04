@@ -239,6 +239,8 @@ const validatePruneOptions = ({
     dnsimpleToken,
     dnsimpleAccountID,
     createDNSRecords,
+    dnsProvider,
+    hostedZoneId
   } = {},
   onError,
 } = {}) => {
@@ -258,11 +260,14 @@ const validatePruneOptions = ({
   if (createDNSRecords && typeof createDNSRecords !== 'function') {
     throw new Error('createDNSRecords must be a function');
   }
-  if (!createDNSRecords && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
+  if (!createDNSRecords && dnsProvider === 'DNSIMPLE' && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
     throw new Error('Missing dns.dnsimpleToken required to create SSL certificates');
   }
-  if (!createDNSRecords && typeof dnsimpleAccountID !== 'string') {
+  if (!createDNSRecords && dnsProvider === 'DNSIMPLE' && typeof dnsimpleAccountID !== 'string') {
     throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleAccountID value');
+  }
+  if (!createDNSRecords && dnsProvider === 'ROUTE_53' && !hostedZoneId) {
+    throw new Error('HostedZoneId required for Route53');
   }
   if (onError && typeof onError !== 'function') {
     throw new Error('onError must be a function');

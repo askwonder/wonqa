@@ -72,7 +72,7 @@ const createEnvironment = async ({
       taskDefinition,
     });
     await saveTaskID({ WONQA_DIR, taskArn });
-    const runningTask = await waitForTaskRunning({ awsRegion, clusterName, taskArn });console.log("Get public IP")
+    const runningTask = await waitForTaskRunning({ awsRegion, clusterName, taskArn });
     const publicIp = await getPublicIP({ awsRegion, runningTask });
     await createDNSRecords({
       dnsimpleAccountID,
