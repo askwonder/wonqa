@@ -69,7 +69,7 @@ const validateHTTPSOptions = ({
   } = {},
 }) => {
   if (dnsProvider != 'DNSIMPLE' && dnsProvider != 'ROUTE_53'){
-    throw new Error('Invalide dnsProvider specified. Must be DNSIMPLE or ROUTE_53');
+    throw new Error('Invalid dnsProvider specified. Must be DNSIMPLE or ROUTE_53');
   }
   if (dnsProvider == 'DNSIMPLE' && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
     throw new Error('Missing https.dnsimpleToken required to create SSL certificates');
