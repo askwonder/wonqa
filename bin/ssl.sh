@@ -23,7 +23,7 @@ ls "$cachePath/etc/letsencrypt/archive/" || echo "$cachePath/etc/letsencrypt/arc
 if [[ ! -d $CERT_DIR ]]; then
   # Generate cert
   cd "$WONQA_DIR"
-  if [[ $dnsProvider == 'DNS_SIMPLE' ]]; then
+  if [[ $dnsProvider == 'DNSIMPLE' ]]; then
     docker build -t "wonqa-certbot" -f "dnsimple/Dockerfile" .
     docker run -i --name wonqa-certbot wonqa-certbot:latest \
       certonly \

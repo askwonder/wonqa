@@ -65,19 +65,19 @@ const route53EditDNSRecord = ({
   var params = {
     ChangeBatch: {
     Changes: [
-        {
+    {
       Action: reqType, 
       ResourceRecordSet: {
         Name: subDomain+'.'+rootDomain, 
         ResourceRecords: [
-          {
+        {
           Value: recValue
         }
         ], 
         TTL: 60, 
         Type: recType
       }
-      }
+    }
     ], 
     Comment: "Test Instance"
     }, 
@@ -89,7 +89,7 @@ const route53EditDNSRecord = ({
   
   route53.changeResourceRecordSets(params, (err, data)=>{
     if (err) { reject(err);}          // an error occurred
-    else  { resolve(data);     }      // successful response
+    else  { resolve(data); }      // successful response
   })
 });
 
@@ -102,29 +102,29 @@ const route53CreateDNSRecords = ({
 
   console.log(`Creating DNS records for IP ${publicIp}`);
 
-      return route53EditDNSRecord({
-        rootDomain,
-        subDomain,
-        hostedZoneId,
-        recValue: publicIp,
-        recType: 'A',
-        reqType: 'UPSERT'
-      })
-      .then(()=>{
+  return route53EditDNSRecord({
+    rootDomain,
+    subDomain,
+    hostedZoneId,
+    recValue: publicIp,
+    recType: 'A',
+    reqType: 'UPSERT'
+  })
+  .then(()=>{
         
-        // create or update CNAME records
-        return route53EditDNSRecord({
-          rootDomain,
-          subDomain: '*.'+subDomain,
-          hostedZoneId,
-          recValue: subDomain+'.'+rootDomain,
-          recType: 'CNAME',
-          reqType: 'UPSERT'
-        });
+    // create or update CNAME records
+    return route53EditDNSRecord({
+      rootDomain,
+      subDomain: '*.'+subDomain,
+      hostedZoneId,
+      recValue: subDomain+'.'+rootDomain,
+      recType: 'CNAME',
+      reqType: 'UPSERT'
+    });
       
-    })
-    .then(() => resolve())
-    .catch(err => reject(err));
+  })
+  .then(() => resolve())
+  .catch(err => reject(err));
 });
 
 const defaultCreateDNSRecords = ({
@@ -220,7 +220,7 @@ const createDNSRecords = ({
     return userCreateDNSRecords(publicIp, rootDomain, subDomain)
       .then(() => resolve())
       .catch(error => reject(error));
-  }else if (dnsProvider == 'ROUTE_53'){
+  } else if (dnsProvider == 'ROUTE_53'){
     return route53CreateDNSRecords({
       rootDomain,
       subDomain,
