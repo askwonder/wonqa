@@ -102,7 +102,6 @@ This is an example config
 const wonqa = new Wonqa({
   https: {
     dnsimpleToken: '8ftZw6dk19fzaDJdkdl2929QIqbjoiLL',    // optional
-    dnsProvider: 'DNSIMPLE || ROUTE_53',
     email: 'bob@domain.com',                              // required
     cachePath: '/Users/bob/Desktop/myApp',                // required
     nginx: {

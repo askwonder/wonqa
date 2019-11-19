@@ -56,9 +56,11 @@ const validateNginxConf = (servers, configurationPath) => {
 
 const validateHTTPSOptions = ({
   dnsimpleToken,
-  dnsProvider,
   email,
   cachePath,
+  dns: {
+    dnsProvider,
+  },
   nginx: {
     configurationPath,
     servers,
