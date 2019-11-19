@@ -59,47 +59,45 @@ const route53EditDNSRecord = ({
   hostedZoneId,
   recValue,
   reqType,
-  recType
-}) => new Promise((resolve,reject) => {
-  
-  var params = {
+  recType,
+}) => new Promise((resolve, reject) => {
+  const params = {
     ChangeBatch: {
-    Changes: [
-    {
-      Action: reqType, 
-      ResourceRecordSet: {
-        Name: subDomain+'.'+rootDomain, 
-        ResourceRecords: [
+      Changes: [
         {
-          Value: recValue
-        }
-        ], 
-        TTL: 60, 
-        Type: recType
-      }
-    }
-    ], 
-    Comment: "Test Instance"
-    }, 
-    HostedZoneId: hostedZoneId
+          Action: reqType,
+          ResourceRecordSet: {
+            Name: `${subDomain}.${rootDomain}`,
+            ResourceRecords: [
+              {
+                Value: recValue,
+              },
+            ],
+            TTL: 60,
+            Type: recType,
+          },
+        },
+      ],
+      Comment: 'Test Instance',
+    },
+    HostedZoneId: hostedZoneId,
   };
 
 
   const route53 = new AWS.Route53();
-  
-  route53.changeResourceRecordSets(params, (err, data)=>{
-    if (err) { reject(err);}          // an error occurred
-    else  { resolve(data); }      // successful response
-  })
+
+  route53.changeResourceRecordSets(params, (err, data) => {
+    if (err) { reject(err); } // an error occurred
+    else { resolve(data); } // successful response
+  });
 });
 
 const route53CreateDNSRecords = ({
   rootDomain,
   subDomain,
   publicIp,
-  hostedZoneId
+  hostedZoneId,
 }) => new Promise((resolve, reject) => {
-
   console.log(`Creating DNS records for IP ${publicIp}`);
 
   return route53EditDNSRecord({
@@ -108,23 +106,18 @@ const route53CreateDNSRecords = ({
     hostedZoneId,
     recValue: publicIp,
     recType: 'A',
-    reqType: 'UPSERT'
+    reqType: 'UPSERT',
   })
-  .then(()=>{
-        
-    // create or update CNAME records
-    return route53EditDNSRecord({
+    .then(() => route53EditDNSRecord({
       rootDomain,
-      subDomain: '*.'+subDomain,
+      subDomain: `*.${subDomain}`,
       hostedZoneId,
-      recValue: subDomain+'.'+rootDomain,
+      recValue: `${subDomain}.${rootDomain}`,
       recType: 'CNAME',
-      reqType: 'UPSERT'
-    });
-      
-  })
-  .then(() => resolve())
-  .catch(err => reject(err));
+      reqType: 'UPSERT',
+    }))
+    .then(() => resolve())
+    .catch(err => reject(err));
 });
 
 const defaultCreateDNSRecords = ({
@@ -171,7 +164,7 @@ const defaultCreateDNSRecords = ({
     .then(() => {
       // create or update CNAME records
       const cNames = scope.data.filter(
-        ({ type, name }) => type === 'CNAME' && name === `*.${subDomain}`
+        ({ type, name }) => type === 'CNAME' && name === `*.${subDomain}`,
       );
       if (cNames.length > 0) {
         const attributes = {
@@ -220,7 +213,7 @@ const createDNSRecords = ({
     return userCreateDNSRecords(publicIp, rootDomain, subDomain)
       .then(() => resolve())
       .catch(error => reject(error));
-  } else if (dnsProvider == 'ROUTE_53'){
+  } if (dnsProvider == 'ROUTE_53') {
     return route53CreateDNSRecords({
       rootDomain,
       subDomain,
@@ -228,20 +221,18 @@ const createDNSRecords = ({
       hostedZoneId,
     })
       .then(() => resolve())
-      .catch(error => reject(error))
-
-  } else {
-
-    return defaultCreateDNSRecords({
-      dnsimpleToken,
-      dnsimpleAccountID,
-      rootDomain,
-      subDomain,
-      publicIp,
-    })
-      .then(() => resolve())
       .catch(error => reject(error));
   }
+
+  return defaultCreateDNSRecords({
+    dnsimpleToken,
+    dnsimpleAccountID,
+    rootDomain,
+    subDomain,
+    publicIp,
+  })
+    .then(() => resolve())
+    .catch(error => reject(error));
 });
 
 const deleteRecord = ({
@@ -269,26 +260,26 @@ const deleteDNSRecords = async ({
   rootDomain,
   subDomain,
 }) => {
-  if (dnsProvider == 'ROUTE_53'){
+  if (dnsProvider == 'ROUTE_53') {
     const route53 = new AWS.Route53();
-    const data = await route53.listResourceRecordSets({HostedZoneId:hostedZoneId}).promise();
-    
+    const data = await route53.listResourceRecordSets({ HostedZoneId: hostedZoneId }).promise();
+
     const aRecords = data.ResourceRecordSets.filter(
-      ({ Type, Name }) => Type === 'A' && Name === subDomain+'.'+rootDomain+'.',
+      ({ Type, Name }) => Type === 'A' && Name === `${subDomain}.${rootDomain}.`,
     );
-    aRecords.forEach(async (record) =>  {
+    aRecords.forEach(async (record) => {
       await route53EditDNSRecord({
         rootDomain,
         subDomain,
         hostedZoneId,
         reqType: 'DELETE',
         recType: 'A',
-        recValue: record.ResourceRecords[0].Value
-      })
-    })
+        recValue: record.ResourceRecords[0].Value,
+      });
+    });
 
     const cRecords = data.ResourceRecordSets.filter(
-      ({ Type, Name }) => Type === 'CNAME' && Name === '*.'+subDomain+'.'+rootDomain+'.',
+      ({ Type, Name }) => Type === 'CNAME' && Name === `*.${subDomain}.${rootDomain}.`,
     );
 
     cRecords.forEach(async (record) => {
@@ -298,9 +289,9 @@ const deleteDNSRecords = async ({
         hostedZoneId,
         reqType: 'DELETE',
         recType: 'CNAME',
-        recValue: '*.'+subDomain+'.'+rootDomain
-      })
-    })
+        recValue: `*.${subDomain}.${rootDomain}`,
+      });
+    });
 
     return;
   }

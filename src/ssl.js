@@ -40,7 +40,7 @@ const ssl = ({
       domains,
       cachePath,
       email,
-      dnsProvider
+      dnsProvider,
     }))
     .then(() => resolve())
     .catch(err => reject(err));

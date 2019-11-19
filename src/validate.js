@@ -68,7 +68,7 @@ const validateHTTPSOptions = ({
     awsLogsStreamPrefix,
   } = {},
 }) => {
-  if (dnsProvider != 'DNSIMPLE' && dnsProvider != 'ROUTE_53'){
+  if (dnsProvider != 'DNSIMPLE' && dnsProvider != 'ROUTE_53') {
     throw new Error('Invalid dnsProvider specified. Must be DNSIMPLE or ROUTE_53');
   }
   if (dnsProvider == 'DNSIMPLE' && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
@@ -243,7 +243,7 @@ const validatePruneOptions = ({
     dnsimpleAccountID,
     createDNSRecords,
     dnsProvider,
-    hostedZoneId
+    hostedZoneId,
   } = {},
   onError,
 } = {}) => {
