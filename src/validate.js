@@ -55,12 +55,8 @@ const validateNginxConf = (servers, configurationPath) => {
 };
 
 const validateHTTPSOptions = ({
-  dnsimpleToken,
   email,
   cachePath,
-  dns: {
-    dnsProvider,
-  },
   nginx: {
     configurationPath,
     servers,
@@ -70,12 +66,6 @@ const validateHTTPSOptions = ({
     awsLogsStreamPrefix,
   } = {},
 }) => {
-  if (dnsProvider != 'DNSIMPLE' && dnsProvider != 'ROUTE_53') {
-    throw new Error('Invalid dnsProvider specified. Must be DNSIMPLE or ROUTE_53');
-  }
-  if (dnsProvider == 'DNSIMPLE' && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
-    throw new Error('Missing https.dnsimpleToken required to create SSL certificates');
-  }
   if (!email || typeof email !== 'string') {
     throw new Error('email is missing');
   }
@@ -120,10 +110,10 @@ const validateDNSOptions = ({
   if (createDNSRecords && typeof createDNSRecords !== 'function') {
     throw new Error('createDNSRecords must be a function');
   }
-  if (dnsProvider == 'DNSIMPLE' && !createDNSRecords && !DNSdnsimpleToken) {
+  if (dnsProvider === 'DNSIMPLE' && !createDNSRecords && !DNSdnsimpleToken) {
     throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleToken value');
   }
-  if (dnsProvider == 'DNSIMPLE' && !createDNSRecords && typeof DNSdnsimpleAccountID !== 'string') {
+  if (dnsProvider === 'DNSIMPLE' && !createDNSRecords && typeof DNSdnsimpleAccountID !== 'string') {
     throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleAccountID value');
   }
 };
@@ -276,6 +266,12 @@ const validatePruneOptions = ({
   }
   if (onError && typeof onError !== 'function') {
     throw new Error('onError must be a function');
+  }
+  if (dnsProvider !== 'DNSIMPLE' && dnsProvider !== 'ROUTE_53') {
+    throw new Error('Invalid dnsProvider specified. Must be DNSIMPLE or ROUTE_53');
+  }
+  if (dnsProvider === 'DNSIMPLE' && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
+    throw new Error('Missing https.dnsimpleToken required to create SSL certificates');
   }
 };
 
