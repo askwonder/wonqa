@@ -56,6 +56,7 @@ const validateNginxConf = (servers, configurationPath) => {
 
 const validateHTTPSOptions = ({
   dnsimpleToken,
+  dnsProvider,
   email,
   cachePath,
   nginx: {
@@ -67,7 +68,10 @@ const validateHTTPSOptions = ({
     awsLogsStreamPrefix,
   } = {},
 }) => {
-  if (!dnsimpleToken || typeof dnsimpleToken !== 'string') {
+  if (dnsProvider != 'DNSIMPLE' && dnsProvider != 'ROUTE_53'){
+    throw new Error('Invalid dnsProvider specified. Must be DNSIMPLE or ROUTE_53');
+  }
+  if (dnsProvider == 'DNSIMPLE' && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
     throw new Error('Missing https.dnsimpleToken required to create SSL certificates');
   }
   if (!email || typeof email !== 'string') {
@@ -99,6 +103,7 @@ const validateHTTPSOptions = ({
 const validateDNSOptions = ({
   rootDomain,
   subDomain,
+  dnsProvider,
   dnsimpleToken: DNSdnsimpleToken,
   dnsimpleAccountID: DNSdnsimpleAccountID,
   createDNSRecords,
@@ -113,10 +118,10 @@ const validateDNSOptions = ({
   if (createDNSRecords && typeof createDNSRecords !== 'function') {
     throw new Error('createDNSRecords must be a function');
   }
-  if (!createDNSRecords && !DNSdnsimpleToken) {
+  if (dnsProvider == 'DNSIMPLE' && !createDNSRecords && !DNSdnsimpleToken) {
     throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleToken value');
   }
-  if (!createDNSRecords && typeof DNSdnsimpleAccountID !== 'string') {
+  if (dnsProvider == 'DNSIMPLE' && !createDNSRecords && typeof DNSdnsimpleAccountID !== 'string') {
     throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleAccountID value');
   }
 };
@@ -237,6 +242,8 @@ const validatePruneOptions = ({
     dnsimpleToken,
     dnsimpleAccountID,
     createDNSRecords,
+    dnsProvider,
+    hostedZoneId
   } = {},
   onError,
 } = {}) => {
@@ -256,11 +263,14 @@ const validatePruneOptions = ({
   if (createDNSRecords && typeof createDNSRecords !== 'function') {
     throw new Error('createDNSRecords must be a function');
   }
-  if (!createDNSRecords && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
+  if (!createDNSRecords && dnsProvider === 'DNSIMPLE' && (!dnsimpleToken || typeof dnsimpleToken !== 'string')) {
     throw new Error('Missing dns.dnsimpleToken required to create SSL certificates');
   }
-  if (!createDNSRecords && typeof dnsimpleAccountID !== 'string') {
+  if (!createDNSRecords && dnsProvider === 'DNSIMPLE' && typeof dnsimpleAccountID !== 'string') {
     throw new Error('If you do not provide a createDNSRecords callback, you need to provide a dns.dnsimpleAccountID value');
+  }
+  if (!createDNSRecords && dnsProvider === 'ROUTE_53' && !hostedZoneId) {
+    throw new Error('HostedZoneId required for Route53');
   }
   if (onError && typeof onError !== 'function') {
     throw new Error('onError must be a function');

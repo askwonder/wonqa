@@ -12,6 +12,7 @@ const ssl = ({
   servers,
   cachePath,
   email,
+  dnsProvider,
 } = {}) => new Promise((resolve, reject) => {
   const subDomain = SUBDOMAIN.toLowerCase();
   const rootDomain = ROOTDOMAIN.toLowerCase();
@@ -39,6 +40,7 @@ const ssl = ({
       domains,
       cachePath,
       email,
+      dnsProvider
     }))
     .then(() => resolve())
     .catch(err => reject(err));

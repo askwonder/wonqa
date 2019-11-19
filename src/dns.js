@@ -1,4 +1,5 @@
 const dns = require('dnsimple');
+const AWS = require('aws-sdk');
 
 let dnsimple;
 const createDNS = ({ dnsimpleToken: accessToken }) => {
@@ -50,6 +51,80 @@ const createRecord = ({
       return resolve(res);
     })
     .catch(err => reject(err));
+});
+
+const route53EditDNSRecord = ({
+  rootDomain,
+  subDomain,
+  hostedZoneId,
+  recValue,
+  reqType,
+  recType
+}) => new Promise((resolve,reject) => {
+  
+  var params = {
+    ChangeBatch: {
+    Changes: [
+    {
+      Action: reqType, 
+      ResourceRecordSet: {
+        Name: subDomain+'.'+rootDomain, 
+        ResourceRecords: [
+        {
+          Value: recValue
+        }
+        ], 
+        TTL: 60, 
+        Type: recType
+      }
+    }
+    ], 
+    Comment: "Test Instance"
+    }, 
+    HostedZoneId: hostedZoneId
+  };
+
+
+  const route53 = new AWS.Route53();
+  
+  route53.changeResourceRecordSets(params, (err, data)=>{
+    if (err) { reject(err);}          // an error occurred
+    else  { resolve(data); }      // successful response
+  })
+});
+
+const route53CreateDNSRecords = ({
+  rootDomain,
+  subDomain,
+  publicIp,
+  hostedZoneId
+}) => new Promise((resolve, reject) => {
+
+  console.log(`Creating DNS records for IP ${publicIp}`);
+
+  return route53EditDNSRecord({
+    rootDomain,
+    subDomain,
+    hostedZoneId,
+    recValue: publicIp,
+    recType: 'A',
+    reqType: 'UPSERT'
+  })
+  .then(()=>{
+        
+    // create or update CNAME records
+    return route53EditDNSRecord({
+      rootDomain,
+      subDomain: '*.'+subDomain,
+      hostedZoneId,
+      recValue: subDomain+'.'+rootDomain,
+      recType: 'CNAME',
+      reqType: 'UPSERT'
+    });
+      
+  })
+  .then(() => resolve())
+  .catch(err => reject(err));
 });
 
 const defaultCreateDNSRecords = ({
@@ -133,26 +208,40 @@ const createDNSRecords = ({
   dnsimpleToken,
   rootDomain,
   subDomain,
+  dnsProvider,
   userCreateDNSRecords,
+  hostedZoneId,
   publicIp,
 }) => new Promise((resolve, reject) => {
   if (!publicIp || typeof publicIp !== 'string') {
     return reject(new Error('Could not find publicIp'));
   }
   if (userCreateDNSRecords) {
-    return userCreateDNSRecords(publicIp)
+    return userCreateDNSRecords(publicIp, rootDomain, subDomain)
+      .then(() => resolve())
+      .catch(error => reject(error));
+  } else if (dnsProvider == 'ROUTE_53'){
+    return route53CreateDNSRecords({
+      rootDomain,
+      subDomain,
+      publicIp,
+      hostedZoneId,
+    })
+      .then(() => resolve())
+      .catch(error => reject(error))
+
+  } else {
+
+    return defaultCreateDNSRecords({
+      dnsimpleToken,
+      dnsimpleAccountID,
+      rootDomain,
+      subDomain,
+      publicIp,
+    })
       .then(() => resolve())
       .catch(error => reject(error));
   }
-  return defaultCreateDNSRecords({
-    dnsimpleToken,
-    dnsimpleAccountID,
-    rootDomain,
-    subDomain,
-    publicIp,
-  })
-    .then(() => resolve())
-    .catch(error => reject(error));
 });
 
 const deleteRecord = ({
@@ -175,9 +264,46 @@ const deleteRecord = ({
 const deleteDNSRecords = async ({
   dnsimpleToken,
   dnsimpleAccountID,
+  dnsProvider,
+  hostedZoneId,
   rootDomain,
   subDomain,
 }) => {
+  if (dnsProvider == 'ROUTE_53'){
+    const route53 = new AWS.Route53();
+    const data = await route53.listResourceRecordSets({HostedZoneId:hostedZoneId}).promise();
+    
+    const aRecords = data.ResourceRecordSets.filter(
+      ({ Type, Name }) => Type === 'A' && Name === subDomain+'.'+rootDomain+'.',
+    );
+    aRecords.forEach(async (record) =>  {
+      await route53EditDNSRecord({
+        rootDomain,
+        subDomain,
+        hostedZoneId,
+        reqType: 'DELETE',
+        recType: 'A',
+        recValue: record.ResourceRecords[0].Value
+      })
+    })
+
+    const cRecords = data.ResourceRecordSets.filter(
+      ({ Type, Name }) => Type === 'CNAME' && Name === '*.'+subDomain+'.'+rootDomain+'.',
+    );
+
+    cRecords.forEach(async (record) => {
+      await route53EditDNSRecord({
+        rootDomain,
+        subDomain,
+        hostedZoneId,
+        reqType: 'DELETE',
+        recType: 'CNAME',
+        recValue: '*.'+subDomain+'.'+rootDomain
+      })
+    })
+
+    return;
+  }
   const dnsClient = createDNS({ dnsimpleToken });
   const data = await dnsClient.zones.allZoneRecords(dnsimpleAccountID, rootDomain);
   const promises = [];

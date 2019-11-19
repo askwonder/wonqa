@@ -101,7 +101,8 @@ This is an example config
 ```js
 const wonqa = new Wonqa({
   https: {
-    dnsimpleToken: '8ftZw6dk19fzaDJdkdl2929QIqbjoiLL',    // required
+    dnsimpleToken: '8ftZw6dk19fzaDJdkdl2929QIqbjoiLL',    // optional
+    dnsProvider: 'DNSIMPLE || ROUTE_53',
     email: 'bob@domain.com',                              // required
     cachePath: '/Users/bob/Desktop/myApp',                // required
     nginx: {
@@ -116,8 +117,10 @@ const wonqa = new Wonqa({
   dns: {
     rootDomain: 'myDomain.com',                           // required
     subDomain: 'feature-cats',                            // required
-    dnsimpleToken: '8ftZw6dk19fzaDJdkdl2929QIqbjoiLL',    // required if createDNSRecord is undefined
-    dnsimpleAccountID: '19291291',                        // required if createDNSRecord is undefined
+    dnsProvider: 'DNSIMPLE || ROUTE_53'                   // required
+    dnsimpleToken: '8ftZw6dk19fzaDJdkdl2929QIqbjoiLL',    // required if dnsProvider is dnsimple
+    dnsimpleAccountID: '19291291',                        // required if dnsProvider is dnsimple
+    hostedZoneId: 'ZDJDJJO12345S',                        // required if dnsProvider is route53
     createDNSRecords: () => Promise,                      // optional
   },
   aws: {
@@ -161,8 +164,8 @@ const wonqa = new Wonqa({
 By default, wonqa adds HTTPS to your environment.
 
 #### Why `https.dnsimpleToken`, `https.email`?
-Wonqa uses the [certbot/dns-dnsimple](https://hub.docker.com/r/certbot/dns-dnsimple/) Docker image to generate [LetsEncrypt](https://letsencrypt.org/) SSL certificates using certbot's DNSimple plugin.
-Wonqa currently only supports certbot's DNSimple plugin and so you'll need a DNSimple account, but we welcome PRs to support additional DNS providers through [Certbot's plugins](https://certbot.eff.org/docs/using.html).
+Wonqa uses the [certbot/dns-dnsimple](https://hub.docker.com/r/certbot/dns-dnsimple/) and [certbot/dns-route53](https://hub.docker.com/r/certbot/dns-route53/) Docker image to generate [LetsEncrypt](https://letsencrypt.org/) SSL certificates using certbot's plugins.
+Wonqa currently only supports certbot's DNSimple and Route53 plugins and so you'll need a DNSimple or AWS account, but we welcome PRs to support additional DNS providers through [Certbot's plugins](https://certbot.eff.org/docs/using.html).
 
 #### Why `https.nginx`?
 To enable Internet traffic to hit your SSL-enabled QA environment living inside AWS Fargate, wonqa will configure a [nginx](https://www.nginx.com/) container to proxy HTTPs traffic from the Internet to the containers running your app code.
@@ -178,6 +181,8 @@ Once your environment is up and running, DNS records can be created to point a u
 
 By default, wonqa will use DNSimple to create or edit DNS records. If you use DNSimple, simply pass your DNSimple creds to the wonqa constructor. 
 
+wonqa will also create DNS records for Route53.
+
 If you prefer a custom implementation, you can pass a `createDNSRecords` function to the wonqa constructor. This function will be called with the publicIP as its only argument and should return a Promise which resolves when the records are created. Wonqa will call this function as soon as the environment is running inside AWS and will poll the given `https://subDomain.rootDomain` URL for a 200 OK once the promise has resolved.
 
 ## Reference
@@ -185,6 +190,8 @@ If you prefer a custom implementation, you can pass a `createDNSRecords` functio
 - `dnsimpleAccountID` [string] **required**: The ID of your DNSimple account required to generate SSL certificates.
 
 - `dnsimpleToken` [string] **required**: Your DNSimple API token required to generate SSL certificates.
+
+- `dnsProvider` [string] **required**: The DNS provider of choice (currently only DNSIMPLE or ROUTE_53).
 
 - `imageRepositoryPath` [string]: The path of an AWS ECR image repository used by wonqa to store the SSL-enabled nginx image for each QA environment. If this is undefined, Wonqa will look for an ECR repository in your account with the name "wonqa-nginx"  or create it.
 
@@ -206,6 +213,10 @@ If you prefer a custom implementation, you can pass a `createDNSRecords` functio
 - `dnsimpleAccountID` [string] **required if createDNSRecords is undefined**: The ID of your DNSimple account.
 
 - `dnsimpleToken` [string] **required if createDNSRecords is undefined**: Your DNSimple API token.
+
+- `dnsProvider` [string] **required**: The DNS provider of choice (currently only DNSIMPLE or ROUTE_53).
+
+- `hostZoneId` [string]  The host zone id of rootDomain in AWS.
 
 - `rootDomain` [string] **required**: The domain used for your QA environment. For eg: `google.com`. This is also the domain used to create DNS records if you use DNSimple.
 

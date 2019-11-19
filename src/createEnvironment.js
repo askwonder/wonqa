@@ -44,6 +44,8 @@ const createEnvironment = async ({
   awsLogsStreamPrefix,
   createDNSRecords: userCreateDNSRecords,
   onSuccess: userOnSuccess,
+  dnsProvider,
+  hostedZoneId
 } = {}) => {
   try {
     await ensureAuthenticated({ awsRegion, iamUsername });
@@ -79,6 +81,8 @@ const createEnvironment = async ({
       subDomain,
       userCreateDNSRecords,
       publicIp,
+      dnsProvider,
+      hostedZoneId
     });
     await waitForQAEnvAvailable({ rootDomain, subDomain });
     await onSuccess({ userOnSuccess, rootDomain, subDomain });

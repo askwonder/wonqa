@@ -26,6 +26,8 @@ const prune = ({
   dns: {
     rootDomain,
     subDomain,
+    dnsProvider,
+    hostedZoneId,
     dnsimpleToken,
     dnsimpleAccountID,
     createDNSRecords,
@@ -73,6 +75,8 @@ const prune = ({
       : deleteDNSRecords({
         dnsimpleToken,
         dnsimpleAccountID,
+        dnsProvider,
+        hostedZoneId,
         rootDomain,
         subDomain,
       })))
