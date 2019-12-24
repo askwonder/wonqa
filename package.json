@@ -20,7 +20,7 @@
     "octokat": "^0.10.0"
   },
   "devDependencies": {
-    "aws-sdk-mock": "^4.3.0",
+    "aws-sdk-mock": "^5.0.0",
     "babel-eslint": "^10.0.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",
