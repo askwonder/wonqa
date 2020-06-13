@@ -34,8 +34,10 @@ if [[ ! -d $CERT_DIR ]]; then
       -m $email \
       -d "$domains"
   elif [[ $dnsProvider == 'ROUTE_53' ]]; then
-    AWS_ACCESS_KEY_ID=$(aws --profile default configure get aws_access_key_id)
-    AWS_SECRET_ACCESS_KEY=$(aws --profile default configure get aws_secret_access_key)
+    if [ -z ${AWS_ACCESS_KEY_ID+x} ]; then
+      AWS_ACCESS_KEY_ID=$(aws --profile default configure get aws_access_key_id)
+      AWS_SECRET_ACCESS_KEY=$(aws --profile default configure get aws_secret_access_key)
+    fi
 
     docker build -t "wonqa-certbot" -f "route53/Dockerfile" .
     docker run -i --name wonqa-certbot \
