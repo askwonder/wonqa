@@ -4,18 +4,33 @@ set -e # exit on non 0 codes
 set -u # error out on failed param expansion
 
 check_aws() {
-  which aws || (  
+  which aws || (
     echo >&2 "Please install aws: https://docs.aws.amazon.com/cli/latest/userguide/installing.html"
     exit 1
-  )  
+  )
 }
 
 check_credentials() {
-  if [[ ! -e ~/.aws/credentials ]]; then
-    echo >&2 "Please add your aws credentials to ~/.aws/credentials: https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html"
+  credentials_set=false
+
+  echo "Checking to ensure that aws credentials are set... "
+
+  # aws credentials can be made available either by the ~/.aws/credentials file
+  # or via environmental variables.
+  # see: https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html
+  if [[ -e ~/.aws/credentials ]]; then
+     echo "~/.aws/credentials found"
+     credentials_set=true
+  fi
+
+  if [ ${AWS_ACCESS_KEY_ID+x} ]; then
+    echo "AWS env variables found"
+    credentials_set=true
+  fi
+
+  if [ "$credentials_set" = "false" ]; then
+    echo >&2 "No aws credentials found. Please make sure to configure your aws credentials: https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html"
     exit 1
-  else
-    echo "~/.aws/credentials"
   fi
 }
 
@@ -32,6 +47,13 @@ echo "Checking for required dependencies"
 check_aws
 check_credentials
 check-ecs-cli
+
+# if awsRegion has not been set us the one set in the proper env variable
+if [ -z ${awsRegion+x} ]; then
+   awsRegion=${AWS_DEFAULT_REGION}
+fi
+
+echo $awsRegion
 
 echo "Configuring AWS"
 aws --version
