@@ -37,5 +37,5 @@ echo "Configuring AWS"
 aws --version
 aws configure set default.region $awsRegion
 aws configure set default.output json
-$(aws ecr get-login --no-include-email --region "${awsRegion}")
+aws ecr get-login-password | docker login --username AWS --password-stdin https://$awsAccountID.dkr.ecr.$awsRegion.amazonaws.com
 echo "AWS configured!"

@@ -48,7 +48,7 @@ const create = ({
   postCreate = [],
 }) => {
   const scope = {};
-  return configure({ WONQA_DIR, awsRegion })
+  return configure({ WONQA_DIR, awsRegion, awsAccountID })
     .then(() => writeConfFile({ WONQA_DIR, servers, configurationPath }))
     .then(() => ssl({
       rootDomain,
