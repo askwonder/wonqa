@@ -41,6 +41,7 @@ const create = ({
     containerDefinitions,
     subnets,
     securityGroups,
+    platformVersion
   } = {},
   onError,
   onSuccess,
@@ -86,6 +87,7 @@ const create = ({
       containerDefinitions,
       subnets,
       securityGroups,
+      platformVersion,
       dnsimpleToken: DNSdnsimpleToken,
       dnsimpleAccountID: DNSdnsimpleAccountID,
       imageRepositoryPath,
