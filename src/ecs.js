@@ -94,10 +94,12 @@ const runTask = ({
   subnets,
   securityGroups,
   taskDefinition: { taskDefinitionArn } = {},
+  platformVersion
 } = {}) => new Promise((resolve, reject) => {
   const params = {
     cluster: clusterName,
     launchType: 'FARGATE',
+    platformVersion,
     networkConfiguration: {
       awsvpcConfiguration: {
         subnets,
