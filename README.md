@@ -129,9 +129,9 @@ const wonqa = new Wonqa({
     clusterName: 'wonqa-cluster',                         // required
     subnets: ['subnet-7c629102'],                         // required
     securityGroups: ['sg-f2o903cd3'],                     // required
-    cpu: '256',                                           // required
-    memory: '512',                                        // required
-    ephemeralStorage: '21',                               // optional, min 21, max 200
+    cpu: '256',                                           // required, aws cpu units
+    memory: '512',                                        // required, megabytes
+    ephemeralStorage: '21',                               // optional, gigabytes, min 21, max 200
     containerDefinitions: [                               // at least 1 container definition is required
       {
         name: 'frontend',                                 // required
