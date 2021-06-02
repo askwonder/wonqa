@@ -1,4 +1,4 @@
-/etc
+.idea
 dnsimple.ini
 nginx/ecs-nginx.conf
 nginx/cert/
