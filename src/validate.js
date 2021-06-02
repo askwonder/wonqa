@@ -127,6 +127,7 @@ const validateAWSOptions = ({
   securityGroups,
   cpu,
   memory,
+  ephemeralStorage,
   containerDefinitions,
 }) => {
   if (!awsAccountID || typeof awsAccountID !== 'string') {
@@ -152,6 +153,9 @@ const validateAWSOptions = ({
   }
   if (!memory || typeof memory !== 'string') {
     throw new Error('Missing memory');
+  }
+  if (ephemeralStorage && typeof ephemeralStorage !== 'string') {
+    throw new Error('ephemeralStorage should be a string');
   }
   if (!containerDefinitions) {
     throw new Error('Missing containerDefinitions');

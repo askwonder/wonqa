@@ -71,6 +71,7 @@ const awsAccountID = getString();
 const subDomain = getString();
 const cpu = getString();
 const memory = getString();
+const ephemeralStorage = getString();
 const containerDefinitions = getString();
 const imageRepositoryPath = getString();
 const awsLogsGroup = getString();
@@ -94,6 +95,7 @@ describe('createEnvironment', () => {
       subDomain,
       cpu,
       memory,
+      ephemeralStorage,
       containerDefinitions,
       imageRepositoryPath,
       awsLogsGroup,
@@ -106,6 +108,7 @@ describe('createEnvironment', () => {
       subDomain,
       cpu,
       memory,
+      ephemeralStorage,
       containerDefinitions,
       imageRepositoryPath,
       awsLogsGroup,

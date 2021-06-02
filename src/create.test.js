@@ -31,6 +31,7 @@ describe('create', () => {
   const clusterName = getString();
   const cpu = getString();
   const memory = getString();
+  const ephemeralStorage = getString();
   const containerDefinitions = [];
   const subnet = getString();
   const subnets = [subnet];
@@ -142,6 +143,7 @@ describe('create', () => {
         clusterName,
         cpu,
         memory,
+        ephemeralStorage,
         containerDefinitions,
         subnets,
         securityGroups,
@@ -158,6 +160,7 @@ describe('create', () => {
       subDomain,
       cpu,
       memory,
+      ephemeralStorage,
       containerDefinitions,
       subnets,
       securityGroups,

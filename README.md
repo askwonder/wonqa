@@ -116,7 +116,7 @@ const wonqa = new Wonqa({
   dns: {
     rootDomain: 'myDomain.com',                           // required
     subDomain: 'feature-cats',                            // required
-    dnsProvider: 'DNSIMPLE || ROUTE_53'                   // required
+    dnsProvider: 'DNSIMPLE || ROUTE_53',                  // required
     dnsimpleToken: '8ftZw6dk19fzaDJdkdl2929QIqbjoiLL',    // required if dnsProvider is dnsimple
     dnsimpleAccountID: '19291291',                        // required if dnsProvider is dnsimple
     hostedZoneId: 'ZDJDJJO12345S',                        // required if dnsProvider is route53
@@ -131,6 +131,7 @@ const wonqa = new Wonqa({
     securityGroups: ['sg-f2o903cd3'],                     // required
     cpu: '256',                                           // required
     memory: '512',                                        // required
+    ephemeralStorage: '21',                               // optional, min 21, max 200
     containerDefinitions: [                               // at least 1 container definition is required
       {
         name: 'frontend',                                 // required
