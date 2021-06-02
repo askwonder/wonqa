@@ -44,6 +44,7 @@ const createTaskDefinition = ({
   subDomain,
   cpu,
   memory,
+  ephemeralStorage,
   containerDefinitions,
   imageRepositoryPath,
   awsLogsGroup,
@@ -109,6 +110,7 @@ const createTaskDefinition = ({
     requiresCompatibilities,
     cpu: cpu || baseCpu,
     memory: memory || baseMemory,
+    ...ephemeralStorage ? { ephemeralStorage: { sizeInGiB: ephemeralStorage } } : {},
     containerDefinitions: updatedContainerDefs,
   };
 };
