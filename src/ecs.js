@@ -94,12 +94,14 @@ const runTask = ({
   subnets,
   securityGroups,
   taskDefinition: { taskDefinitionArn } = {},
-  platformVersion
+  platformVersion,
+  ephemeralStorage,
 } = {}) => new Promise((resolve, reject) => {
   const params = {
     cluster: clusterName,
     launchType: 'FARGATE',
     platformVersion,
+    ...ephemeralStorage ? { ephemeralStorage: { sizeInGiB: ephemeralStorage } } : {},
     networkConfiguration: {
       awsvpcConfiguration: {
         subnets,

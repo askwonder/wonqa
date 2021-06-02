@@ -59,7 +59,6 @@ const createEnvironment = async ({
       subDomain,
       cpu,
       memory,
-      ephemeralStorage,
       containerDefinitions,
       imageRepositoryPath,
       awsLogsGroup,
@@ -73,7 +72,8 @@ const createEnvironment = async ({
       subnets,
       securityGroups,
       taskDefinition,
-      platformVersion
+      platformVersion,
+      ephemeralStorage,
     });
     await saveTaskID({ WONQA_DIR, taskArn });
     const runningTask = await waitForTaskRunning({ awsRegion, clusterName, taskArn });
