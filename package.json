@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.273.1",
+    "aws-sdk": "~2.920.0",
     "dnsimple": "^3.0.1",
     "eslint": "^5.1.0",
     "lodash": "^4.17.11",

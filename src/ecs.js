@@ -94,7 +94,7 @@ const runTask = ({
   subnets,
   securityGroups,
   taskDefinition: { taskDefinitionArn } = {},
-  platformVersion
+  platformVersion,
 } = {}) => new Promise((resolve, reject) => {
   const params = {
     cluster: clusterName,
