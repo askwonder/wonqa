@@ -636,7 +636,7 @@ aws-sdk-mock@^4.3.0:
     sinon "^7.3.2"
     traverse "^0.6.6"
 
-aws-sdk@^2.273.1, aws-sdk@^2.483.0:
+aws-sdk@^2.483.0, aws-sdk@~2.920.0:
   version "2.920.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.920.0.tgz#27559885ca882de1f87dd21ae4d2d004690867a7"
   integrity sha512-tbMZ/Y2rRo6R6TTBODJXTiil+MXaoT6Qzotws3yvI1IWGpYxKo7N/3L06XB8ul8tCG0TigxIOY70SMICM70Ppg==

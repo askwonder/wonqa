@@ -95,14 +95,11 @@ const runTask = ({
   securityGroups,
   taskDefinition: { taskDefinitionArn } = {},
   platformVersion,
-  ephemeralStorage
 } = {}) => new Promise((resolve, reject) => {
-  console.log(`eph stor in run ${JSON.stringify({ ...ephemeralStorage ? { ephemeralStorage: { sizeInGiB: ephemeralStorage } } : {} })}`);
   const params = {
     cluster: clusterName,
     launchType: 'FARGATE',
     platformVersion,
-    ...ephemeralStorage ? { ephemeralStorage: { sizeInGiB: ephemeralStorage } } : {},
     networkConfiguration: {
       awsvpcConfiguration: {
         subnets,

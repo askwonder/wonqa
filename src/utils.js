@@ -102,7 +102,6 @@ const createTaskDefinition = ({
     return def;
   });
 
-  console.log(`eph stor in task ${JSON.stringify({ ...ephemeralStorage ? { ephemeralStorage: { sizeInGiB: ephemeralStorage } } : {} })}`);
   return {
     family: subDomain, // Changing this will break ecs.js#deregisterPreviousTaskDefinitions
     taskRoleArn: taskRoleArn.replace('<awsAccountID>', awsAccountID),

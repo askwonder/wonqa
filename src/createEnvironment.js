@@ -74,7 +74,6 @@ const createEnvironment = async ({
       securityGroups,
       taskDefinition,
       platformVersion,
-      ephemeralStorage
     });
     await saveTaskID({ WONQA_DIR, taskArn });
     const runningTask = await waitForTaskRunning({ awsRegion, clusterName, taskArn });
