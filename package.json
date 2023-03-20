@@ -1,5 +1,5 @@
 {
-  "name": "wonqa",
+  "name": "@askwonder/wonqa",
   "version": "0.1.1",
   "description": "On-demand test environments",
   "main": "src/index.js",
@@ -40,6 +40,9 @@
     "https",
     "aws-sdk"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,mjs}"
