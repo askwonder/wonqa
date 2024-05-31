@@ -128,7 +128,7 @@ const saveTaskID = ({ WONQA_DIR, taskArn }) => new Promise((resolve, reject) => 
  * waitForQAEnvAvailable
  * Wait for the QA env to return a 200 OK
  */
-const waitForQAEnvAvailable = ({ subDomain, rootDomain }) => {
+const waitForQAEnvAvailable = ({ subDomain, rootDomain, healthCheckUrl }) => {
   console.log('Waiting for your QA env to return a 200 OK');
   let TIMEOUT = 100;
   const poll = (resolve, reject) => {
@@ -138,7 +138,7 @@ const waitForQAEnvAvailable = ({ subDomain, rootDomain }) => {
       setTimeout(() => poll(resolve, reject), TIMEOUT);
     };
     setTimeout(() => {
-      https.get(`https://${subDomain}.${rootDomain}`, (res) => {
+      https.get(healthCheckUrl || `https://${subDomain}.${rootDomain}`, (res) => {
         console.log('HTTPS GET status:', res.statusCode);
         if (res.statusCode === 200) {
           resolve();

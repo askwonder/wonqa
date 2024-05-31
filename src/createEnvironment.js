@@ -33,6 +33,7 @@ const createEnvironment = async ({
   securityGroups,
   rootDomain,
   subDomain,
+  healthCheckUrl,
   cpu,
   memory,
   containerDefinitions,
@@ -84,7 +85,7 @@ const createEnvironment = async ({
       dnsProvider,
       hostedZoneId,
     });
-    await waitForQAEnvAvailable({ rootDomain, subDomain });
+    await waitForQAEnvAvailable({ rootDomain, subDomain, healthCheckUrl });
     await onSuccess({ userOnSuccess, rootDomain, subDomain });
     await stopPreviousTasks({
       awsRegion,
