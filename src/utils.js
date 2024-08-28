@@ -139,10 +139,9 @@ const waitForQAEnvAvailable = ({ subDomain, rootDomain, healthCheckUrl }) => {
     };
     setTimeout(() => {
       const healthCheckEndpoint = new URL(healthCheckUrl || '', `https://${subDomain}.${rootDomain}`);
-      console.log('healthCheck endpoint:', healthCheckEndpoint);
 
       https.get(healthCheckEndpoint, (res) => {
-        console.log('HTTPS GET status:', res.statusCode);
+        console.log('HTTPS GET status:', res.statusCode, healthCheckEndpoint.toString());
         if (res.statusCode === 200) {
           resolve();
         } else {
