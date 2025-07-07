@@ -1,3 +1,21 @@
+/**
+ * DNSimple TXT Record Cleanup Script
+ * 
+ * This script bulk deletes TXT records containing a specific search term from DNSimple.
+ * Useful for cleaning up stale ACME challenge records that can interfere with Let's Encrypt
+ * certificate generation when multiple challenge attempts leave behind orphaned TXT records.
+ * 
+ * Usage:
+ *   export DNSIMPLE_TOKEN=your_token_here
+ *   export DNSIMPLE_ACCOUNT_ID=your_account_id
+ *   node cleanup-txt-records.js [search_term]
+ * 
+ * Examples:
+ *   node cleanup-txt-records.js node-22           # Delete all TXT records containing "node-22"
+ *   node cleanup-txt-records.js _acme-challenge   # Delete all ACME challenge records
+ *   node cleanup-txt-records.js staging          # Delete all TXT records containing "staging"
+ */
+
 const dns = require('dnsimple');
 
 const token = process.env.DNSIMPLE_TOKEN;
